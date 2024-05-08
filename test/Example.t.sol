@@ -45,6 +45,9 @@ contract ExampleTest is Test {
         timeLock.revokeRole(adminRole, USER);
 
         vm.stopPrank();
+
+        funding = new Funding();
+        funding.transferOwnership(address(timeLock));
     }
 
     // function test_Increment() public {
