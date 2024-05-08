@@ -11,6 +11,11 @@ contract VotingToken is ERC20, ERC20Permit, ERC20Votes {
 
     // The functions below are overrides required by Solidity.
 
+    // TODO -> should update this to control who can mint and how it is minted
+    function mint(address to, uint256 amount) public {
+        _mint(to, amount);
+    }
+
     function _update(address from, address to, uint256 amount) internal override(ERC20, ERC20Votes) {
         super._update(from, to, amount);
     }
