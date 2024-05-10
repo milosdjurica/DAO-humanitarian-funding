@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {Funding} from "../src/Funding.sol";
-import {MyGovernor} from "../src/MyGovernor.sol";
-import {TimeLock} from "../src/TimeLock.sol";
-import {VotingToken} from "../src/VotingToken.sol";
+import {Funding, Ownable} from "../../src/Funding.sol";
+import {MyGovernor} from "../../src/MyGovernor.sol";
+import {TimeLock} from "../../src/TimeLock.sol";
+import {VotingToken} from "../../src/VotingToken.sol";
 
 contract ExampleTest is Test {
     Funding funding;
@@ -20,10 +20,15 @@ contract ExampleTest is Test {
     uint256 public constant QUORUM_PERCENTAGE = 4; // ! Quorum required for a proposal to pass.
     uint256 public constant AMOUNT_TO_MINT = 100 ether;
     uint256 public constant MIN_DELAY = 3600; // ! hour
+    uint256 public constant AMOUNT_TO_FUND = 1 ether;
 
     address public USER = makeAddr("user");
     address[] public proposers;
     address[] public executors;
+
+    address[] public targets;
+    uint256[] public values;
+    bytes[] public calldatas;
 
     function setUp() public {
         votingToken = new VotingToken();
@@ -50,10 +55,24 @@ contract ExampleTest is Test {
         funding.transferOwnership(address(timeLock));
     }
 
-    // function test_Increment() public {
-    //     counter.increment();
-    //     assertEq(counter.number(), 1);
-    // }
+    function test_fund_RevertIf_CalledByNotOwner() public {
+        vm.startPrank(USER);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
+        funding.fund(USER, 1 ether);
+        vm.stopPrank();
+    }
+
+    function test_fund_SuccessfullyFunded() public {
+        vm.startPrank(USER);
+        vm.stopPrank();
+
+        votingToken.mint(USER, 1 ether);
+        bytes memory encodedFunctionCall = abi.encodeWithSignature("fund(address,uint256)", USER, AMOUNT_TO_FUND);
+
+        values.push(0);
+        calldatas.push(encodedFunctionCall);
+        targets.push(address(funding));
+    }
 
     // function testFuzz_SetNumber(uint256 x) public {
     //     counter.setNumber(x);
