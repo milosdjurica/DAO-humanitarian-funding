@@ -24,12 +24,21 @@ contract Funding is Ownable {
     ////////////////////
     // * Events 	  //
     ////////////////////
+    event AmountFunded(uint256 amount);
 
     ////////////////////
     // * Modifiers 	  //
     ////////////////////
 
     constructor() Ownable(msg.sender) {}
+
+    fallback() external payable {
+        emit AmountFunded(msg.value);
+    }
+
+    receive() external payable {
+        emit AmountFunded(msg.value);
+    }
 
     function fund(address _userToFund, uint256 _amount) public onlyOwner {
         if (_userToFund == address(0)) revert Funding__ZeroAddress();

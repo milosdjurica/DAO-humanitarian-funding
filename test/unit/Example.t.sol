@@ -22,7 +22,7 @@ contract ExampleTest is Test {
     uint256 public constant MIN_DELAY = 3600; // ! hour
     uint256 public constant AMOUNT_TO_FUND = 1 ether;
 
-    address public USER = makeAddr("user");
+    address payable public USER = payable(makeAddr("user"));
     address[] public proposers;
     address[] public executors;
 
@@ -32,10 +32,7 @@ contract ExampleTest is Test {
 
     function setUp() public {
         votingToken = new VotingToken();
-        votingToken.mint(USER, AMOUNT_TO_MINT);
 
-        vm.startPrank(USER);
-        votingToken.delegate(USER);
         timeLock = new TimeLock(MIN_DELAY, proposers, executors);
         myGovernor = new MyGovernor(
             GOVERNOR_NAME, VOTING_DELAY, VOTING_PERIOD, PROPOSAL_THRESHOLD, votingToken, QUORUM_PERCENTAGE, timeLock
@@ -47,9 +44,7 @@ contract ExampleTest is Test {
 
         timeLock.grantRole(proposerRole, address(myGovernor));
         timeLock.grantRole(executorRole, address(0)); // ! Everyone can execute
-        timeLock.revokeRole(adminRole, USER);
-
-        vm.stopPrank();
+        timeLock.revokeRole(adminRole, address(this));
 
         funding = new Funding();
         funding.transferOwnership(address(timeLock));
@@ -63,15 +58,55 @@ contract ExampleTest is Test {
     }
 
     function test_fund_SuccessfullyFunded() public {
+        string memory description = "Description";
+
+        // ! Send money to funding contract
+        vm.deal(USER, 100 ether);
         vm.startPrank(USER);
+        console2.log("User balance: ", USER.balance);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
+
+        // ! Give voting token to user and let him cast vote
+        votingToken.mint(USER, AMOUNT_TO_MINT);
+        votingToken.delegate(USER);
         vm.stopPrank();
 
-        votingToken.mint(USER, 1 ether);
         bytes memory encodedFunctionCall = abi.encodeWithSignature("fund(address,uint256)", USER, AMOUNT_TO_FUND);
 
         values.push(0);
         calldatas.push(encodedFunctionCall);
         targets.push(address(funding));
+
+        // ! Propose to DAO
+        uint256 proposalId = myGovernor.propose(targets, values, calldatas, description);
+        console2.log("Proposal state when proposing: ", uint256(myGovernor.state(proposalId)));
+        vm.warp(block.timestamp + VOTING_DELAY + 1);
+        vm.roll(block.number + VOTING_DELAY + 1);
+        console2.log("Proposal state after proposing: ", uint256(myGovernor.state(proposalId)));
+
+        // ! Voting
+        uint8 voteWay = 1;
+        vm.startPrank(USER);
+        myGovernor.castVote(proposalId, voteWay);
+        vm.warp(block.timestamp + VOTING_PERIOD + 1);
+        vm.roll(block.number + VOTING_PERIOD + 1);
+        vm.stopPrank();
+        console2.log("Proposal state after voting: ", uint256(myGovernor.state(proposalId)));
+
+        // ! Queue TX
+        bytes32 descriptionHash = keccak256(abi.encodePacked(description));
+        myGovernor.queue(targets, values, calldatas, descriptionHash);
+        vm.warp(block.timestamp + MIN_DELAY + 1);
+        vm.roll(block.timestamp + MIN_DELAY + 1);
+
+        console2.log("Proposal state after queuing: ", uint256(myGovernor.state(proposalId)));
+        // ! Execute
+        console2.log("Funding contract balance", address(funding).balance);
+        myGovernor.execute(targets, values, calldatas, descriptionHash);
+        console2.log("Proposal state after executing: ", uint256(myGovernor.state(proposalId)));
+        vm.warp(block.timestamp + MIN_DELAY + 1);
+        vm.roll(block.timestamp + MIN_DELAY + 1);
+        assert(funding.s_winner() == USER);
     }
 
     // function testFuzz_SetNumber(uint256 x) public {
