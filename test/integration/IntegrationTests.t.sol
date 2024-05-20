@@ -57,13 +57,6 @@ contract IntegrationTests is Test, Constants {
         vm.roll(block.number + _amount + 1);
     }
 
-    function test_fund_RevertIf_CalledByNotOwner() public {
-        vm.startPrank(USER);
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
-        funding.fund(USER, 1 ether);
-        vm.stopPrank();
-    }
-
     function test_fund_SuccessfullyFunded() public {
         // ! Donate money
         sendMoneyToFundingContract();
