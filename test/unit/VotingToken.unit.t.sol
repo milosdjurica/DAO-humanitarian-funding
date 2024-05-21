@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import {Test, console2} from "forge-std/Test.sol";
 
-import {VotingToken, Ownable, ERC20} from "../../src/VotingToken.sol";
+import {VotingToken, Ownable} from "../../src/VotingToken.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
 import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
 
@@ -15,12 +15,13 @@ contract VotingTokenUnitTests is Test {
 
     address USER = makeAddr("USER");
     address BOB = makeAddr("BOB");
+    address firstVoter;
 
     function setUp() public {
-        (votingToken, timeLock,,,) = new DeployAndSetUpContracts().run();
+        (votingToken, timeLock,,, firstVoter) = new DeployAndSetUpContracts().run();
     }
 
-    function test_constructor_SetsOwner() public {
+    function test_constructor_InitsCorrectly() public {
         vm.prank(USER);
         VotingToken testToken = new VotingToken();
         vm.stopPrank();
@@ -43,9 +44,15 @@ contract VotingTokenUnitTests is Test {
         vm.stopPrank();
     }
 
+    function test_nonces_ReturnsZeroIfUserDoNotHaveVotingPower() public view {
+        uint256 nonce = votingToken.nonces(USER);
+        assertEq(nonce, 0);
+    }
+
     function test_mint_MintsSuccessfully() public {
         vm.prank(address(timeLock));
         votingToken.mint(USER, TOKEN_AMOUNT_FIRST_MINT);
+        vm.stopPrank();
         assertEq(votingToken.balanceOf(USER), TOKEN_AMOUNT_FIRST_MINT);
     }
 }
