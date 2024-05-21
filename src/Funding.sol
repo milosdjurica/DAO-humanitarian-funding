@@ -25,7 +25,7 @@ contract Funding is Ownable {
     // * Events 	  //
     ////////////////////
     event AmountFunded(uint256 amount);
-    event SentMoneyToUser(address _userToFund, uint256 _amount);
+    event MoneyIsSentToUser(address userToFund, uint256 amount);
 
     ////////////////////
     // * Modifiers 	  //
@@ -47,7 +47,7 @@ contract Funding is Ownable {
         if (address(this).balance <= _amount) revert Funding__NotEnoughBalance(address(this).balance);
 
         s_winner = _userToFund;
-        emit SentMoneyToUser(_userToFund, _amount);
+        emit MoneyIsSentToUser(_userToFund, _amount);
         (bool success,) = _userToFund.call{value: _amount}("");
         if (!success) revert Funding__TransferFailed();
     }
