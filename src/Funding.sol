@@ -24,8 +24,8 @@ contract Funding is Ownable {
     ////////////////////
     // * Events 	  //
     ////////////////////
-    event AmountFunded(uint256 amount);
-    event MoneyIsSentToUser(address userToFund, uint256 amount);
+    event AmountFunded(uint256 indexed amount);
+    event MoneyIsSentToUser(address indexed userToFund, uint256 indexed amount);
 
     ////////////////////
     // * Modifiers 	  //

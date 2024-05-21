@@ -20,8 +20,8 @@ contract FundingUnitTests is Test {
     address payable public SENDER = payable(makeAddr("SENDER"));
     address public USER_TO_GET_FUNDED = makeAddr("USER_TO_GET_FUNDED");
 
-    event MoneyIsSentToUser(address user, uint256 amount);
-    event AmountFunded(uint256 amount);
+    event AmountFunded(uint256 indexed amount);
+    event MoneyIsSentToUser(address indexed user, uint256 indexed amount);
 
     function setUp() public {
         deployer = new DeployAndSetUpContracts();
