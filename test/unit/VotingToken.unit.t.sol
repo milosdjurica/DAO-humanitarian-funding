@@ -55,4 +55,22 @@ contract VotingTokenUnitTests is Test {
         vm.stopPrank();
         assertEq(votingToken.balanceOf(USER), TOKEN_AMOUNT_FIRST_MINT);
     }
+
+    // ! TODO -> FUZZ TESTS HERE AND IN FUNDING
+
+    function testFuzz_constructor_SetsOwner(address owner_) public {
+        vm.assume(owner_ != address(0));
+        vm.prank(owner_);
+        VotingToken testToken = new VotingToken();
+        vm.stopPrank();
+        assertEq(testToken.owner(), owner_);
+    }
+
+    function testFuzz_constructor_MintsTokenForOwner(address owner_) public {
+        vm.assume(owner_ != address(0));
+        vm.prank(owner_);
+        VotingToken testToken = new VotingToken();
+        vm.stopPrank();
+        assertEq(testToken.balanceOf(owner_), TOKEN_AMOUNT_FIRST_MINT);
+    }
 }
