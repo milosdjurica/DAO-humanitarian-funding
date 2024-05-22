@@ -20,7 +20,7 @@ contract DeployAndSetUpContracts is Script, Constants {
     address[] public executors;
     address public firstVoter;
 
-    function run() external returns (VotingToken, TimeLock, MyGovernor, Funding, address) {
+    function run() external returns (VotingToken, TimeLock, MyGovernor, Funding, address, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig();
         (uint256 interval, address vrfCoordinator, bytes32 gasLane, uint64 subscriptionId, uint32 callbackGasLimit) =
             helperConfig.activeNetworkConfig();
@@ -47,6 +47,6 @@ contract DeployAndSetUpContracts is Script, Constants {
         votingToken.transferOwnership(address(timeLock));
         vm.stopBroadcast();
 
-        return (votingToken, timeLock, myGovernor, funding, firstVoter);
+        return (votingToken, timeLock, myGovernor, funding, firstVoter, helperConfig);
     }
 }

@@ -33,7 +33,7 @@ contract IntegrationTests is Test, Constants {
 
     function setUp() public {
         deployer = new DeployAndSetUpContracts();
-        (votingToken, timeLock, myGovernor, funding, firstVoter) = deployer.run();
+        (votingToken, timeLock, myGovernor, funding, firstVoter,) = deployer.run();
     }
 
     // ! Send money to funding contract

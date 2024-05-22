@@ -18,7 +18,7 @@ contract VotingTokenFuzzTests is Test {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function setUp() public {
-        (votingToken, timeLock,,,) = new DeployAndSetUpContracts().run();
+        (votingToken, timeLock,,,,) = new DeployAndSetUpContracts().run();
     }
 
     function testFuzz_constructor_SetsOwner(address owner_) public {

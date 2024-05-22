@@ -20,7 +20,7 @@ contract VotingTokenUnitTests is Test {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     function setUp() public {
-        (votingToken, timeLock,,, firstVoter) = new DeployAndSetUpContracts().run();
+        (votingToken, timeLock,,, firstVoter,) = new DeployAndSetUpContracts().run();
     }
 
     function test_constructor_InitsCorrectly() public {
