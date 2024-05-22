@@ -10,7 +10,7 @@ import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol"
 import {Constants} from "../../script/Constants.sol";
 
 contract IntegrationTests is Test, Constants {
-    uint256 public constant AMOUNT_TO_FUND = 1 ether;
+    uint256 public constant AMOUNT_NEEDED = 1 ether;
     uint256 public constant SENDER_FUNDS = 100 ether;
 
     VotingToken votingToken;
@@ -21,7 +21,7 @@ contract IntegrationTests is Test, Constants {
 
     address payable public USER = payable(makeAddr("USER"));
     address payable public SENDER = payable(makeAddr("SENDER"));
-    address public USER_TO_GET_FUNDED = makeAddr("USER_TO_GET_FUNDED");
+    address public USER_TO_ADD = makeAddr("USER_TO_ADD");
     address public firstVoter;
 
     address[] public proposers;
@@ -40,7 +40,7 @@ contract IntegrationTests is Test, Constants {
     function sendMoneyToFundingContract() internal {
         vm.deal(SENDER, SENDER_FUNDS);
         vm.startPrank(SENDER);
-        payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
+        payable(address(funding)).transfer(AMOUNT_NEEDED * 2);
         vm.stopPrank();
     }
 
@@ -67,7 +67,7 @@ contract IntegrationTests is Test, Constants {
 
         string memory description = "Description";
         bytes memory encodedFunctionCall =
-            abi.encodeWithSignature("fund(address,uint256)", USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
+            abi.encodeWithSignature("addNewUser(address,uint256)", USER_TO_ADD, AMOUNT_NEEDED);
         values.push(0);
         calldatas.push(encodedFunctionCall);
         targets.push(address(funding));
@@ -95,7 +95,7 @@ contract IntegrationTests is Test, Constants {
         // ! Execute
         myGovernor.execute(targets, values, calldatas, descriptionHash);
         console2.log("Proposal state after executing: ", uint256(myGovernor.state(proposalId)));
-        moveTime(MIN_DELAY);
-        assert(funding.s_recentlyChosenUser() == USER_TO_GET_FUNDED);
+
+        assert(funding.getUserByIndex(0) == USER_TO_ADD);
     }
 }

@@ -39,7 +39,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
 
-    address payable[] private s_users;
+    address payable[] public s_users;
     mapping(address => uint256) s_toBeFunded;
     uint256 private s_lastTimeStamp;
 
@@ -139,5 +139,9 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
 
         (bool success,) = winner.call{value: balanceOfContract}("");
         if (!success) revert Funding__TransferFailed();
+    }
+
+    function getUserByIndex(uint256 index_) external view returns (address user) {
+        return s_users[index_];
     }
 }
