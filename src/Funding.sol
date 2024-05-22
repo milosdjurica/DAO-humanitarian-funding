@@ -50,6 +50,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     // * Events 	  //
     ////////////////////
     event AmountFunded(address indexed sender, uint256 indexed amount);
+    event UserAddedToArray(address indexed user, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed userToFund, uint256 indexed amount);
 
     ////////////////////
@@ -92,6 +93,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
 
         // TODO -> make sure this is ALWAYS >=0 !!!
+        emit UserAddedToArray(newUser_, amount_);
         if (s_toBeFunded[newUser_] == 0) s_users.push(payable(newUser_));
         s_toBeFunded[newUser_] += amount_;
     }
@@ -130,6 +132,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         uint256 indexOfWinner = randomWords[0] % totalNumberOfUsers;
         address payable winner = s_users[indexOfWinner];
 
+        // TODO -> balance - needed and delete user from array if needed
         s_recentlyChosenUser = winner;
         emit MoneyIsSentToUser(winner, balanceOfContract);
         s_contractState = ContractState.OPEN;
