@@ -57,8 +57,8 @@ contract IntegrationTests is Test, Constants {
         vm.roll(block.number + _amount + 1);
     }
 
-    // TODO -> test_addUser !!! This is only function that owner can call
     // TODO -> add integration tests for chainlink keepers and VRF
+    // TODO -> add integration tests for adding more people to the government (VotingToken::mint())
     function test_fund_SuccessfullyFunded() public {
         // ! Donate money
         sendMoneyToFundingContract();
