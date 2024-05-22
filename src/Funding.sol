@@ -86,13 +86,11 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         emit AmountFunded(msg.sender, msg.value);
     }
 
-    // TODO -> FIX THIS -> can potentially repeat users
     function addNewUser(address newUser_, uint256 amount_) external onlyOwner {
         if (newUser_ == address(0)) revert Funding__ZeroAddress();
         if (amount_ <= 0) revert Funding__AmountIsZero();
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
 
-        // TODO -> make sure this is ALWAYS >=0 !!!
         emit UserAddedToArray(newUser_, amount_);
         if (s_toBeFunded[newUser_] == 0) s_users.push(payable(newUser_));
         s_toBeFunded[newUser_] += amount_;
@@ -131,8 +129,26 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         uint256 totalNumberOfUsers = s_users.length;
         uint256 indexOfWinner = randomWords[0] % totalNumberOfUsers;
         address payable winner = s_users[indexOfWinner];
+        uint256 moneyNeeded = s_toBeFunded[winner];
 
-        // TODO -> balance - needed and delete user from array if needed
+        // TODO -> check in REMIX if this is more gas efficient
+        // s_toBeFunded[winner] -= balanceOfContract;
+        // if (moneyNeeded <= balanceOfContract) {
+        //     s_toBeFunded[winner] = 0;
+        //     // ! Remove winner -> put last one on his place and pop last one because now there are 2
+        //     s_users[indexOfWinner] = s_users[totalNumberOfUsers];
+        //     s_users.pop();
+        // }
+
+        if (moneyNeeded > balanceOfContract) {
+            s_toBeFunded[winner] -= balanceOfContract;
+        } else {
+            s_toBeFunded[winner] = 0;
+            // ! Remove winner -> put last one on his place and pop last one because now there are 2
+            s_users[indexOfWinner] = s_users[totalNumberOfUsers];
+            s_users.pop();
+        }
+
         s_recentlyChosenUser = winner;
         emit MoneyIsSentToUser(winner, balanceOfContract);
         s_contractState = ContractState.OPEN;
