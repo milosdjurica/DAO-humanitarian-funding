@@ -57,6 +57,8 @@ contract IntegrationTests is Test, Constants {
         vm.roll(block.number + _amount + 1);
     }
 
+    // TODO -> test_addUser !!! This is only function that owner can call
+    // TODO -> add integration tests for chainlink keepers and VRF
     function test_fund_SuccessfullyFunded() public {
         // ! Donate money
         sendMoneyToFundingContract();
@@ -94,6 +96,6 @@ contract IntegrationTests is Test, Constants {
         myGovernor.execute(targets, values, calldatas, descriptionHash);
         console2.log("Proposal state after executing: ", uint256(myGovernor.state(proposalId)));
         moveTime(MIN_DELAY);
-        assert(funding.s_winner() == USER_TO_GET_FUNDED);
+        assert(funding.s_recentlyChosenUser() == USER_TO_GET_FUNDED);
     }
 }

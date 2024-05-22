@@ -12,16 +12,19 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2
 contract Funding is Ownable, VRFConsumerBaseV2 {
     error Funding__ZeroAddress();
     error Funding__AmountIsZero();
-    error Funding__NotEnoughBalance(uint256 balance);
+    error Funding__ContractBalanceIsZero();
     error Funding__TransferFailed();
     error Funding__ContractStateNotOpen(ContractState);
+    error Funding__NoUsersToPick();
+    error Funding__NotEnoughTimePassed();
+    error Funding__UpkeepNotNeeded(uint256 balance, uint256 usersLength, ContractState);
 
     ////////////////////
     // * Types 		  //
     ////////////////////
     enum ContractState {
         OPEN,
-        CALCULATING
+        CLOSED
     }
 
     ////////////////////
@@ -29,6 +32,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     ////////////////////
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
+
     uint256 private immutable i_interval;
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     bytes32 private immutable i_gasLane;
@@ -37,6 +41,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
 
     address payable[] private s_users;
     mapping(address => uint256) s_toBeFunded;
+    uint256 private s_lastTimeStamp;
 
     address public s_recentlyChosenUser;
     ContractState private s_contractState;
@@ -44,7 +49,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     ////////////////////
     // * Events 	  //
     ////////////////////
-    event AmountFunded(uint256 indexed amount);
+    event AmountFunded(address indexed sender, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed userToFund, uint256 indexed amount);
 
     ////////////////////
@@ -64,28 +69,53 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         i_subscriptionId = subscriptionId_;
         i_callbackGasLimit = callbackGasLimit_;
         s_contractState = ContractState.OPEN;
+        s_lastTimeStamp = block.timestamp;
     }
 
     fallback() external payable {
-        emit AmountFunded(msg.value);
+        sendMoneyToContract();
     }
 
     receive() external payable {
-        emit AmountFunded(msg.value);
+        sendMoneyToContract();
     }
 
+    function sendMoneyToContract() public payable {
+        if (msg.value == 0) revert Funding__AmountIsZero();
+        emit AmountFunded(msg.sender, msg.value);
+    }
+
+    // TODO -> FIX THIS -> can potentially repeat users
     function addNewUser(address newUser_, uint256 amount_) external onlyOwner {
         if (newUser_ == address(0)) revert Funding__ZeroAddress();
         if (amount_ <= 0) revert Funding__AmountIsZero();
-        // TODO check if this is good !!
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
 
+        // TODO -> make sure this is ALWAYS >=0 !!!
         if (s_toBeFunded[newUser_] == 0) s_users.push(payable(newUser_));
         s_toBeFunded[newUser_] += amount_;
     }
 
-    function giveFundsToUser() external {
-        uint256 requestId = i_vrfCoordinator.requestRandomWords(
+    function checkUpkeep(bytes memory /* checkData */ )
+        public
+        view
+        returns (bool upkeepNeeded, bytes memory /* performData */ )
+    {
+        if ((block.timestamp - s_lastTimeStamp) >= i_interval) revert Funding__NotEnoughTimePassed();
+        if (address(this).balance == 0) revert Funding__ContractBalanceIsZero();
+        if (s_users.length == 0) revert Funding__NoUsersToPick();
+        if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
+
+        return (true, "0x0");
+    }
+
+    function giveFundsToUser() external onlyOwner {
+        (bool upkeepNeeded,) = checkUpkeep("");
+        // ! Probably don't need this revert -> because it reverts in check upkeep
+        if (!upkeepNeeded) revert Funding__UpkeepNotNeeded(address(this).balance, s_users.length, s_contractState);
+
+        s_contractState = ContractState.CLOSED;
+        i_vrfCoordinator.requestRandomWords(
             i_gasLane, // gas lane
             i_subscriptionId, // id
             REQUEST_CONFIRMATIONS, // how many blocks should pass
@@ -95,37 +125,16 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     }
 
     function fulfillRandomWords(uint256, uint256[] memory randomWords) internal override {
-        // ! TODO -> Do the funding logic here !!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+        uint256 balanceOfContract = address(this).balance;
         uint256 totalNumberOfUsers = s_users.length;
         uint256 indexOfWinner = randomWords[0] % totalNumberOfUsers;
         address payable winner = s_users[indexOfWinner];
+
         s_recentlyChosenUser = winner;
-        // TODO -> update this when funding or remove this completely???
-        // TODO -> remove user from array if it is funded completely
-        // TODO -> emit that money is sent to user
+        emit MoneyIsSentToUser(winner, balanceOfContract);
+        s_contractState = ContractState.OPEN;
 
-        (bool success,) = s_recentlyChosenUser.call{value: address(this).balance}("");
-        if (!success) revert Funding__TransferFailed();
-    }
-
-    // TODO ->
-    // - DAO users vote who can get the chance to get money and how much money we put in them
-    // - Every 24h new random winner is picked and ALL money from contract is sent or max needed for user.
-    // - Remaining stays at the contract and is given to the next winner
-    // - Picking winner is random
-
-    function fund(address userToFund_) public onlyOwner {
-        uint256 balanceOfContract = address(this).balance;
-        if (userToFund_ == address(0)) revert Funding__ZeroAddress();
-        if (balanceOfContract <= 0) revert Funding__AmountIsZero();
-
-        // ! If balance -> s_toBeFunded[user] ===> then just give that toBeFunded value, not everything
-        // ! s_toBeFunded -= balance (or === 0)
-
-        s_recentlyChosenUser = userToFund_;
-        emit MoneyIsSentToUser(userToFund_, balanceOfContract);
-        (bool success,) = userToFund_.call{value: balanceOfContract}("");
+        (bool success,) = winner.call{value: balanceOfContract}("");
         if (!success) revert Funding__TransferFailed();
     }
 }

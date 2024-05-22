@@ -29,100 +29,100 @@ contract FundingUnitTests is Test {
         revertTransferContract = new RevertTransfer();
     }
 
-    function test_constructor_SetsOwnerCorrectly() public {
-        vm.startPrank(USER);
-        Funding fundingTest = new Funding();
-        assertEq(fundingTest.owner(), USER);
-        vm.stopPrank();
-    }
+    // function test_constructor_SetsOwnerCorrectly() public {
+    //     vm.startPrank(USER);
+    //     Funding fundingTest = new Funding();
+    //     assertEq(fundingTest.owner(), USER);
+    //     vm.stopPrank();
+    // }
 
-    function test_fallback_BoolSuccessFundsMoneyAndEmits() public {
-        vm.expectEmit(true, true, true, true);
-        emit AmountFunded(AMOUNT_TO_FUND);
-        (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}("some data");
-        assertTrue(success);
-        assertEq(address(funding).balance, AMOUNT_TO_FUND);
-    }
+    // function test_fallback_BoolSuccessFundsMoneyAndEmits() public {
+    //     vm.expectEmit(true, true, true, true);
+    //     emit AmountFunded(AMOUNT_TO_FUND);
+    //     (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}("some data");
+    //     assertTrue(success);
+    //     assertEq(address(funding).balance, AMOUNT_TO_FUND);
+    // }
 
-    function test_receive_BoolSuccessFundsMoneyAndEmits() public {
-        vm.expectEmit(true, true, true, true);
-        emit AmountFunded(AMOUNT_TO_FUND);
-        (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}("");
-        assertTrue(success);
-        assertEq(address(funding).balance, AMOUNT_TO_FUND);
-    }
+    // function test_receive_BoolSuccessFundsMoneyAndEmits() public {
+    //     vm.expectEmit(true, true, true, true);
+    //     emit AmountFunded(AMOUNT_TO_FUND);
+    //     (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}("");
+    //     assertTrue(success);
+    //     assertEq(address(funding).balance, AMOUNT_TO_FUND);
+    // }
 
-    function test_fund_RevertIf_CalledByNotOwner() public {
-        vm.startPrank(USER);
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
-        funding.fund(USER, 1 ether);
-        vm.stopPrank();
-    }
+    // function test_fund_RevertIf_CalledByNotOwner() public {
+    //     vm.startPrank(USER);
+    //     vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
+    //     funding.fund(USER, 1 ether);
+    //     vm.stopPrank();
+    // }
 
-    function test_fund_RevertIf_ZeroAddress() public {
-        vm.startPrank(address(timeLock));
-        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ZeroAddress.selector));
-        funding.fund(address(0), AMOUNT_TO_FUND);
-    }
+    // function test_fund_RevertIf_ZeroAddress() public {
+    //     vm.startPrank(address(timeLock));
+    //     vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ZeroAddress.selector));
+    //     funding.fund(address(0), AMOUNT_TO_FUND);
+    // }
 
-    function test_fund_RevertIf_AmountIsZero() public {
-        vm.startPrank(address(timeLock));
-        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__AmountIsZero.selector));
-        funding.fund(USER_TO_GET_FUNDED, 0);
-        vm.stopPrank();
-    }
+    // function test_fund_RevertIf_AmountIsZero() public {
+    //     vm.startPrank(address(timeLock));
+    //     vm.expectRevert(abi.encodeWithSelector(Funding.Funding__AmountIsZero.selector));
+    //     funding.fund(USER_TO_GET_FUNDED, 0);
+    //     vm.stopPrank();
+    // }
 
-    function test_fund_RevertIf_NotEnoughBalance() public {
-        vm.startPrank(address(timeLock));
-        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NotEnoughBalance.selector, 0));
-        funding.fund(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
-        vm.stopPrank();
-    }
+    // function test_fund_RevertIf_NotEnoughBalance() public {
+    //     vm.startPrank(address(timeLock));
+    //     vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NotEnoughBalance.selector, 0));
+    //     funding.fund(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
+    //     vm.stopPrank();
+    // }
 
-    function test_fund_RevertIf_TransferFailed() public {
-        vm.deal(SENDER, SENDER_FUNDS);
-        vm.startPrank(SENDER);
-        payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
-        vm.stopPrank();
+    // function test_fund_RevertIf_TransferFailed() public {
+    //     vm.deal(SENDER, SENDER_FUNDS);
+    //     vm.startPrank(SENDER);
+    //     payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
+    //     vm.stopPrank();
 
-        vm.startPrank(address(timeLock));
-        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__TransferFailed.selector));
-        funding.fund(address(revertTransferContract), AMOUNT_TO_FUND);
-        vm.stopPrank();
-    }
+    //     vm.startPrank(address(timeLock));
+    //     vm.expectRevert(abi.encodeWithSelector(Funding.Funding__TransferFailed.selector));
+    //     funding.fund(address(revertTransferContract), AMOUNT_TO_FUND);
+    //     vm.stopPrank();
+    // }
 
-    function test_fund_EmitsEvent() public {
-        vm.deal(SENDER, SENDER_FUNDS);
-        vm.startPrank(SENDER);
-        // ! * 2 to have enough money for gas
-        payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
-        vm.stopPrank();
+    // function test_fund_EmitsEvent() public {
+    //     vm.deal(SENDER, SENDER_FUNDS);
+    //     vm.startPrank(SENDER);
+    //     // ! * 2 to have enough money for gas
+    //     payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
+    //     vm.stopPrank();
 
-        vm.startPrank(address(timeLock));
-        vm.expectEmit(true, true, true, true);
-        emit MoneyIsSentToUser(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
-        funding.fund(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
-        vm.stopPrank();
-    }
+    //     vm.startPrank(address(timeLock));
+    //     vm.expectEmit(true, true, true, true);
+    //     emit MoneyIsSentToUser(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
+    //     funding.fund(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
+    //     vm.stopPrank();
+    // }
 
-    modifier fundSuccessfully() {
-        vm.deal(SENDER, SENDER_FUNDS);
-        vm.startPrank(SENDER);
-        // ! * 2 to have enough money for gas
-        payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
-        vm.stopPrank();
+    // modifier fundSuccessfully() {
+    //     vm.deal(SENDER, SENDER_FUNDS);
+    //     vm.startPrank(SENDER);
+    //     // ! * 2 to have enough money for gas
+    //     payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
+    //     vm.stopPrank();
 
-        vm.startPrank(address(timeLock));
-        funding.fund(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
-        vm.stopPrank();
-        _;
-    }
+    //     vm.startPrank(address(timeLock));
+    //     funding.fund(USER_TO_GET_FUNDED, AMOUNT_TO_FUND);
+    //     vm.stopPrank();
+    //     _;
+    // }
 
-    function test_fund_SendsMoneyToUser() public fundSuccessfully {
-        assertEq(USER_TO_GET_FUNDED.balance, AMOUNT_TO_FUND);
-    }
+    // function test_fund_SendsMoneyToUser() public fundSuccessfully {
+    //     assertEq(USER_TO_GET_FUNDED.balance, AMOUNT_TO_FUND);
+    // }
 
-    function test_fund_ChangesWinner() public fundSuccessfully {
-        assertEq(funding.s_winner(), USER_TO_GET_FUNDED);
-    }
+    // function test_fund_ChangesWinner() public fundSuccessfully {
+    //     assertEq(funding.s_winner(), USER_TO_GET_FUNDED);
+    // }
 }

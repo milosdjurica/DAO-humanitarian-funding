@@ -7,6 +7,7 @@ import {TimeLock} from "../src/TimeLock.sol";
 import {MyGovernor} from "../src/MyGovernor.sol";
 import {Funding} from "../src/Funding.sol";
 import {Constants} from "./Constants.sol";
+import {HelperConfig} from "./HelperConfig.s.sol";
 
 contract DeployAndSetUpContracts is Script, Constants {
     Funding funding;
@@ -20,6 +21,10 @@ contract DeployAndSetUpContracts is Script, Constants {
     address public firstVoter;
 
     function run() external returns (VotingToken, TimeLock, MyGovernor, Funding, address) {
+        HelperConfig helperConfig = new HelperConfig();
+        (uint256 interval, address vrfCoordinator, bytes32 gasLane, uint64 subscriptionId, uint32 callbackGasLimit) =
+            helperConfig.activeNetworkConfig();
+
         vm.startBroadcast();
         votingToken = new VotingToken();
         firstVoter = votingToken.owner();
@@ -37,7 +42,7 @@ contract DeployAndSetUpContracts is Script, Constants {
         timeLock.grantRole(executorRole, address(0)); // ! Everyone can execute
         timeLock.revokeRole(adminRole, address(this));
 
-        funding = new Funding();
+        funding = new Funding(interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit);
         funding.transferOwnership(address(timeLock));
         votingToken.transferOwnership(address(timeLock));
         vm.stopBroadcast();
