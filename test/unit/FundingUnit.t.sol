@@ -28,7 +28,8 @@ contract FundingUnitTests is Test {
     address payable SENDER = payable(makeAddr("SENDER"));
     address USER_TO_ADD = makeAddr("USER_TO_ADD");
 
-    event AmountFunded(address indexed sender, uint256 indexed amount);
+    event UserAddedToArray(address indexed user, uint256 indexed amount);
+    event AmountFundedToContract(address indexed sender, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed user, uint256 indexed amount);
 
     function setUp() public {
@@ -38,20 +39,22 @@ contract FundingUnitTests is Test {
         revertTransferContract = new RevertTransfer();
     }
 
+    // TODO -> maybe change variables to internal in order to test them with harness contracts
     function test_constructor_SetsOwnerCorrectly() public {
         vm.startPrank(USER);
         Funding fundingTest = new Funding(interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit);
-        assertEq(fundingTest.owner(), USER);
+        assertEq(fundingTest.owner(), USER, "Owner on Test Funding Contract should be USER");
         vm.stopPrank();
     }
 
+    // TODO -> ADD STRING DESCRIPTION TO ALL ASSERT EQUALS
     function test_owner_TimeLockIsOwner() public view {
         assertEq(funding.owner(), address(timeLock));
     }
 
     function test_fallback_BoolSuccessFundsMoneyAndEmits() public {
         vm.expectEmit(true, true, true, true);
-        emit AmountFunded(address(this), AMOUNT_TO_FUND);
+        emit AmountFundedToContract(address(this), AMOUNT_TO_FUND);
         (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}("some data");
         assertTrue(success);
         assertEq(address(funding).balance, AMOUNT_TO_FUND);
@@ -59,7 +62,7 @@ contract FundingUnitTests is Test {
 
     function test_receive_BoolSuccessFundsMoneyAndEmits() public {
         vm.expectEmit(true, true, true, true);
-        emit AmountFunded(address(this), AMOUNT_TO_FUND);
+        emit AmountFundedToContract(address(this), AMOUNT_TO_FUND);
         (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}("");
         assertTrue(success);
         assertEq(address(funding).balance, AMOUNT_TO_FUND);
@@ -67,10 +70,10 @@ contract FundingUnitTests is Test {
 
     function test_sendMoneyToContract_BoolSuccessFundsMoneyAndEmits() public {
         vm.expectEmit(true, true, true, true);
-        emit AmountFunded(address(this), AMOUNT_TO_FUND);
+        emit AmountFundedToContract(address(this), AMOUNT_TO_FUND);
         (bool success,) = address(funding).call{value: AMOUNT_TO_FUND}(abi.encodeWithSignature("sendMoneyToContract()"));
         assertTrue(success);
-        assertEq(address(funding).balance, AMOUNT_TO_FUND);
+        assertEq(address(funding).balance, AMOUNT_TO_FUND, "");
     }
 
     function test_addNewUser_RevertIf_CalledByNotOwner() public {
@@ -91,6 +94,26 @@ contract FundingUnitTests is Test {
         vm.expectRevert(abi.encodeWithSelector(Funding.Funding__AmountIsZero.selector));
         funding.addNewUser(USER_TO_ADD, 0);
         vm.stopPrank();
+    }
+
+    function test_addNewUser_RevertIf_ContractStateIsNotOpen() public {
+        vm.startPrank(address(timeLock));
+        // ! Manually changing storage value of s_contractState
+        // ! vm.store(contractAddr, storageSlot, valueToStore);
+        vm.store(address(funding), bytes32(uint256(5)), bytes32(uint256(Funding.ContractState.CLOSED)));
+        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ContractStateNotOpen.selector, 1));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+    }
+
+    function test_addNewUser_AddsUserSuccessfully() public {
+        vm.startPrank(address(timeLock));
+        vm.expectEmit(true, true, true, true);
+        emit UserAddedToArray(USER_TO_ADD, AMOUNT_TO_FUND);
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+        assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), AMOUNT_TO_FUND);
+        assertEq(funding.getUserByIndex(0), USER_TO_ADD);
     }
 
     // function test_fund_RevertIf_NotEnoughBalance() public {

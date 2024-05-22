@@ -40,16 +40,16 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     uint32 private immutable i_callbackGasLimit;
 
     address payable[] public s_users;
-    mapping(address => uint256) s_toBeFunded;
-    uint256 private s_lastTimeStamp;
-
+    mapping(address => uint256) public s_toBeFunded;
     address public s_recentlyChosenUser;
+
+    uint256 private s_lastTimestamp;
     ContractState private s_contractState;
 
     ////////////////////
     // * Events 	  //
     ////////////////////
-    event AmountFunded(address indexed sender, uint256 indexed amount);
+    event AmountFundedToContract(address indexed sender, uint256 indexed amount);
     event UserAddedToArray(address indexed user, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed userToFund, uint256 indexed amount);
 
@@ -70,7 +70,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         i_subscriptionId = subscriptionId_;
         i_callbackGasLimit = callbackGasLimit_;
         s_contractState = ContractState.OPEN;
-        s_lastTimeStamp = block.timestamp;
+        s_lastTimestamp = block.timestamp;
     }
 
     fallback() external payable {
@@ -83,17 +83,19 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
 
     function sendMoneyToContract() public payable {
         if (msg.value == 0) revert Funding__AmountIsZero();
-        emit AmountFunded(msg.sender, msg.value);
+        emit AmountFundedToContract(msg.sender, msg.value);
     }
 
     function addNewUser(address newUser_, uint256 amount_) external onlyOwner {
         if (newUser_ == address(0)) revert Funding__ZeroAddress();
         if (amount_ <= 0) revert Funding__AmountIsZero();
+        // ! TODO -> Check in REMIX if it is more gas efficient to ->
+        // ! store contractState in local variable and then use it in next line
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
 
-        emit UserAddedToArray(newUser_, amount_);
         if (s_toBeFunded[newUser_] == 0) s_users.push(payable(newUser_));
         s_toBeFunded[newUser_] += amount_;
+        emit UserAddedToArray(newUser_, amount_);
     }
 
     function checkUpkeep(bytes memory /* checkData */ )
@@ -101,7 +103,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         view
         returns (bool upkeepNeeded, bytes memory /* performData */ )
     {
-        if ((block.timestamp - s_lastTimeStamp) >= i_interval) revert Funding__NotEnoughTimePassed();
+        if ((block.timestamp - s_lastTimestamp) >= i_interval) revert Funding__NotEnoughTimePassed();
         if (address(this).balance == 0) revert Funding__ContractBalanceIsZero();
         if (s_users.length == 0) revert Funding__NoUsersToPick();
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
@@ -109,6 +111,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         return (true, "0x0");
     }
 
+    // TODO -> change this to performUpkeep !!!
     function giveFundsToUser() external onlyOwner {
         (bool upkeepNeeded,) = checkUpkeep("");
         // ! Probably don't need this revert -> because it reverts in check upkeep
@@ -149,6 +152,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
             s_users.pop();
         }
 
+        // TODO -> update s_lastTimestamp ???
         s_recentlyChosenUser = winner;
         emit MoneyIsSentToUser(winner, balanceOfContract);
         s_contractState = ContractState.OPEN;
@@ -157,7 +161,11 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         if (!success) revert Funding__TransferFailed();
     }
 
-    function getUserByIndex(uint256 index_) external view returns (address user) {
+    function getUserByIndex(uint256 index_) external view returns (address) {
         return s_users[index_];
+    }
+
+    function getAmountThatUserNeeds(address user_) external view returns (uint256) {
+        return s_toBeFunded[user_];
     }
 }
