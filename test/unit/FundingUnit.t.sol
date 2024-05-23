@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {Funding, Ownable} from "../../src/Funding.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
 import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
-import {RevertTransfer} from "../RevertTransfer.sol";
+import {RevertTransfer} from "../mocks/RevertTransfer.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 
 contract FundingUnitTests is Test {
@@ -35,7 +35,7 @@ contract FundingUnitTests is Test {
     function setUp() public {
         deployer = new DeployAndSetUpContracts();
         (, timeLock,, funding,, helperConfig) = deployer.run();
-        (interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit) = helperConfig.activeNetworkConfig();
+        (interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit,) = helperConfig.activeNetworkConfig();
         revertTransferContract = new RevertTransfer();
     }
 
@@ -47,7 +47,11 @@ contract FundingUnitTests is Test {
         vm.stopPrank();
     }
 
-    // TODO -> ADD STRING DESCRIPTION TO ALL ASSERT EQUALS
+    function test_constructor_InitsWithStateOpen() public view {
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
+    }
+
+    // TODO -> maybe ADD STRING DESCRIPTION TO ALL ASSERT EQUALS
     function test_owner_TimeLockIsOwner() public view {
         assertEq(funding.owner(), address(timeLock));
     }
@@ -114,6 +118,54 @@ contract FundingUnitTests is Test {
         vm.stopPrank();
         assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), AMOUNT_TO_FUND);
         assertEq(funding.getUserByIndex(0), USER_TO_ADD);
+    }
+
+    function test_checkUpkeep_RevertIf_NotEnoughTimePassed() public {
+        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NotEnoughTimePassed.selector));
+        funding.checkUpkeep("");
+    }
+
+    function test_checkUpkeep_RevertIf_ContractBalanceIsZero() public {
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + interval + 1);
+        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ContractBalanceIsZero.selector));
+        funding.checkUpkeep("");
+    }
+
+    function test_checkUpkeep_RevertIf_UsersArrayIsEmpty() public {
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + interval + 1);
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NoUsersToPick.selector));
+        funding.checkUpkeep("");
+    }
+
+    function test_checkUpkeep_RevertIf_StateIsNotOpen() public {
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + interval + 1);
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER, AMOUNT_TO_FUND);
+        vm.stopPrank();
+        vm.store(address(funding), bytes32(uint256(5)), bytes32(uint256(1)));
+        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ContractStateNotOpen.selector, 1));
+        funding.checkUpkeep("");
+    }
+
+    function test_checkUpkeep_PassesSuccessfully() public {
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + interval + 1);
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+
+        (bool success, bytes memory data) = funding.checkUpkeep("");
+        assertTrue(success);
+        assertEq(data, "0x0");
     }
 
     // function test_fund_RevertIf_NotEnoughBalance() public {

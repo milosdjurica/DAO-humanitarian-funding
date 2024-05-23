@@ -91,6 +91,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         if (amount_ <= 0) revert Funding__AmountIsZero();
         // ! TODO -> Check in REMIX if it is more gas efficient to ->
         // ! store contractState in local variable and then use it in next line
+        // TODO -> Also check in REMIX what costs more gas, getting public variable or private variable with getter
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
 
         if (s_toBeFunded[newUser_] == 0) s_users.push(payable(newUser_));
@@ -103,7 +104,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         view
         returns (bool upkeepNeeded, bytes memory /* performData */ )
     {
-        if ((block.timestamp - s_lastTimestamp) >= i_interval) revert Funding__NotEnoughTimePassed();
+        if ((block.timestamp - s_lastTimestamp) < i_interval) revert Funding__NotEnoughTimePassed();
         if (address(this).balance == 0) revert Funding__ContractBalanceIsZero();
         if (s_users.length == 0) revert Funding__NoUsersToPick();
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
@@ -167,5 +168,9 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
 
     function getAmountThatUserNeeds(address user_) external view returns (uint256) {
         return s_toBeFunded[user_];
+    }
+
+    function getContractState() external view returns (ContractState) {
+        return s_contractState;
     }
 }
