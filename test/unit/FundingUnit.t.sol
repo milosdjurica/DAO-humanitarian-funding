@@ -36,7 +36,7 @@ contract FundingUnitTests is Test {
     function setUp() public {
         deployer = new DeployAndSetUpContracts();
         (, timeLock,, funding,, helperConfig) = deployer.run();
-        (interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit,) = helperConfig.activeNetworkConfig();
+        (interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit) = helperConfig.activeNetworkConfig();
         revertTransferContract = new RevertTransfer();
     }
 

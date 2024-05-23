@@ -8,7 +8,6 @@ import {MyGovernor} from "../src/MyGovernor.sol";
 import {Funding} from "../src/Funding.sol";
 import {Constants} from "./Constants.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
-import {CreateSubscription} from "./vrf/CreateSubscription.s.sol";
 
 contract DeployAndSetUpContracts is Script, Constants {
     Funding funding;
@@ -23,13 +22,8 @@ contract DeployAndSetUpContracts is Script, Constants {
 
     function run() external returns (VotingToken, TimeLock, MyGovernor, Funding, address, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig();
-        (uint256 interval, address vrfCoordinator, bytes32 gasLane, uint64 subscriptionId, uint32 callbackGasLimit,) =
+        (uint256 interval, address vrfCoordinator, bytes32 gasLane, uint64 subscriptionId, uint32 callbackGasLimit) =
             helperConfig.activeNetworkConfig();
-
-        // if (subscriptionId == 0) {
-        //     CreateSubscription createSubscription = new CreateSubscription();
-        //     subscriptionId = createSubscription.createSubscription(vrfCoordinator);
-        // }
 
         vm.startBroadcast();
         votingToken = new VotingToken();

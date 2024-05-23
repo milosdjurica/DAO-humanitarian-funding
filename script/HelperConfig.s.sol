@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import {Script} from "forge-std/Script.sol";
 
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
-import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 contract HelperConfig is Script {
     struct NetworkConfig {
@@ -13,7 +12,6 @@ contract HelperConfig is Script {
         bytes32 gasLane;
         uint64 subscriptionId;
         uint32 callbackGasLimit;
-        address link;
     }
 
     uint96 constant BASE_FEE_VRF_MOCK = 0.25 ether; // 0.25 LINK
@@ -37,8 +35,7 @@ contract HelperConfig is Script {
             vrfCoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
             gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
             subscriptionId: 7694, // TODO -> change this to your subscription !!! Maybe load from .env???
-            callbackGasLimit: 500000, // 500,000 gas !
-            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+            callbackGasLimit: 500000 // 500,000 gas !
         });
     }
 
@@ -47,7 +44,6 @@ contract HelperConfig is Script {
 
         vm.startBroadcast();
         VRFCoordinatorV2Mock vrfCoordinatorMock = new VRFCoordinatorV2Mock(BASE_FEE_VRF_MOCK, GAS_PRICE_LINK_VRF_MOCK);
-        LinkToken linkToken = new LinkToken();
         vm.stopBroadcast();
 
         return NetworkConfig({
@@ -55,8 +51,7 @@ contract HelperConfig is Script {
             vrfCoordinator: address(vrfCoordinatorMock),
             gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c, // does not matter
             subscriptionId: 1,
-            callbackGasLimit: 5000,
-            link: address(linkToken)
+            callbackGasLimit: 5000
         });
     }
 }
