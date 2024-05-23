@@ -113,10 +113,9 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     }
 
     function performUpkeep(bytes calldata /*performData*/ ) external {
-        (bool upkeepNeeded,) = checkUpkeep("");
-        // ! Probably don't need this revert -> because it reverts in check upkeep
-        if (!upkeepNeeded) revert Funding__UpkeepNotNeeded(address(this).balance, s_users.length, s_contractState);
+        checkUpkeep("");
 
+        // ! TODO -> check if this should be above checkUpkeep ?
         s_contractState = ContractState.CLOSED;
         i_vrfCoordinator.requestRandomWords(
             i_gasLane, // gas lane
@@ -127,37 +126,32 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         );
     }
 
-    function fulfillRandomWords(uint256, uint256[] memory randomWords) internal override {
+    function fulfillRandomWords(uint256, /*requestId */ uint256[] memory randomWords) internal override {
         uint256 balanceOfContract = address(this).balance;
         uint256 totalNumberOfUsers = s_users.length;
         uint256 indexOfWinner = randomWords[0] % totalNumberOfUsers;
         address payable winner = s_users[indexOfWinner];
         uint256 moneyNeeded = s_toBeFunded[winner];
-
-        // TODO -> check in REMIX if this is more gas efficient
-        // s_toBeFunded[winner] -= balanceOfContract;
-        // if (moneyNeeded <= balanceOfContract) {
-        //     s_toBeFunded[winner] = 0;
-        //     // ! Remove winner -> put last one on his place and pop last one because now there are 2
-        //     s_users[indexOfWinner] = s_users[totalNumberOfUsers];
-        //     s_users.pop();
-        // }
+        uint256 moneyToSend = 0;
 
         if (moneyNeeded > balanceOfContract) {
             s_toBeFunded[winner] -= balanceOfContract;
+            moneyToSend = balanceOfContract;
         } else {
             s_toBeFunded[winner] = 0;
             // ! Remove winner -> put last one on his place and pop last one because now there are 2
             s_users[indexOfWinner] = s_users[totalNumberOfUsers];
             s_users.pop();
+            moneyToSend = moneyNeeded;
         }
 
-        // TODO -> update s_lastTimestamp ???
+        s_lastTimestamp = block.timestamp;
         s_recentlyChosenUser = winner;
-        emit MoneyIsSentToUser(winner, balanceOfContract);
         s_contractState = ContractState.OPEN;
+        emit MoneyIsSentToUser(winner, moneyToSend);
 
-        (bool success,) = winner.call{value: balanceOfContract}("");
+        // ! TODO -> Check if moneyToSend logic is good!!!
+        (bool success,) = winner.call{value: moneyToSend}("");
         if (!success) revert Funding__TransferFailed();
     }
 

@@ -32,6 +32,16 @@ contract FundingUnitTests is Test {
     event UserAddedToArray(address indexed user, uint256 indexed amount);
     event AmountFundedToContract(address indexed sender, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed user, uint256 indexed amount);
+    event RandomWordsRequested(
+        bytes32 indexed keyHash,
+        uint256 requestId,
+        uint256 preSeed,
+        uint64 indexed subId,
+        uint16 minimumRequestConfirmations,
+        uint32 callbackGasLimit,
+        uint32 numWords,
+        address indexed sender
+    );
 
     function setUp() public {
         deployer = new DeployAndSetUpContracts();
@@ -168,6 +178,32 @@ contract FundingUnitTests is Test {
         assertTrue(success);
         assertEq(data, "0x0");
     }
+
+    function test_performUpkeep_PassesSuccessfully() public {
+        // vm.mockCall(address(funding), abi.encodeWithSelector(funding.checkUpkeep.selector, ""), abi.encode(true, "0x0"));
+
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + interval + 1);
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+
+        uint64 subId = VRFCoordinatorV2Mock(vrfCoordinator).createSubscription();
+        VRFCoordinatorV2Mock(vrfCoordinator).fundSubscription(subId, 3 ether);
+        VRFCoordinatorV2Mock(vrfCoordinator).addConsumer(subId, address(funding));
+
+        vm.expectEmit(true, true, true, true);
+        emit RandomWordsRequested(
+            0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c, 1, 100, 1, 3, 5000, 1, address(funding)
+        );
+        funding.performUpkeep("");
+        assert(funding.getContractState() == Funding.ContractState.CLOSED);
+    }
+
+    function test_fulfillRandomWords_FundsAccountThatNeedsMore() public {}
+    function test_fulfillRandomWords_FundsAccountCompletely() public {}
 
     // function test_fund_RevertIf_NotEnoughBalance() public {
     //     vm.startPrank(address(timeLock));
