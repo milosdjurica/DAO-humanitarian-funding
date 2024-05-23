@@ -2,9 +2,9 @@
 pragma solidity ^0.8.20;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {HelperConfig} from "./HelperConfig.s.sol";
+import {HelperConfig} from "../HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
-import {LinkToken} from "../test/mocks/LinkToken.sol";
+import {LinkToken} from "../../test/mocks/LinkToken.sol";
 
 contract FundSubscription is Script {
     uint96 public constant FUND_AMOUNT = 3 ether;

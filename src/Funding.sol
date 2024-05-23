@@ -112,8 +112,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         return (true, "0x0");
     }
 
-    // TODO -> change this to performUpkeep !!!
-    function giveFundsToUser() external onlyOwner {
+    function performUpkeep(bytes calldata /*performData*/ ) external {
         (bool upkeepNeeded,) = checkUpkeep("");
         // ! Probably don't need this revert -> because it reverts in check upkeep
         if (!upkeepNeeded) revert Funding__UpkeepNotNeeded(address(this).balance, s_users.length, s_contractState);
@@ -172,5 +171,9 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
 
     function getContractState() external view returns (ContractState) {
         return s_contractState;
+    }
+
+    function getSubId() external view returns (uint64) {
+        return i_subscriptionId;
     }
 }

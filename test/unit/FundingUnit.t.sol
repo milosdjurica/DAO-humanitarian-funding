@@ -7,6 +7,7 @@ import {TimeLock} from "../../src/TimeLock.sol";
 import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
 import {RevertTransfer} from "../mocks/RevertTransfer.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
+import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
 
 contract FundingUnitTests is Test {
     uint256 constant AMOUNT_TO_FUND = 1 ether;
