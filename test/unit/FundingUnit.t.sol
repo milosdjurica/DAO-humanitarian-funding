@@ -264,7 +264,36 @@ contract FundingUnitTests is Test {
         assertEq(address(funding).balance, AMOUNT_TO_FUND);
     }
 
-    // TODO -> TEST VIEW AND PURE FUNCTIONS
+    function test_getUserByIndex() public {
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+        assertEq(funding.getUserByIndex(0), USER_TO_ADD);
+    }
+
+    function test_getAmountThatUserNeeds() public {
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+        assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), AMOUNT_TO_FUND);
+    }
+
+    function test_getContractState() public view {
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
+    }
+
+    function test_getSubId() public view {
+        assertEq(funding.getSubId(), 1);
+    }
+
+    function test_getLatestTimestamp() public view {
+        assertEq(funding.getLatestTimestamp(), block.timestamp);
+    }
+
+    function test_getRecentWinner() public view {
+        assertEq(funding.getRecentWinner(), address(0));
+    }
+
     // function test_fund_RevertIf_NotEnoughBalance() public {
     //     vm.startPrank(address(timeLock));
     //     vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NotEnoughBalance.selector, 0));
