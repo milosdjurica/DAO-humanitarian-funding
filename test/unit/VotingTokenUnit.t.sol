@@ -46,11 +46,6 @@ contract VotingTokenUnitTests is Test {
         vm.stopPrank();
     }
 
-    function test_nonces_ReturnsZeroIfUserDoNotHaveVotingPower() public view {
-        uint256 nonce = votingToken.nonces(USER);
-        assertEq(nonce, 0);
-    }
-
     function test_mint_MintsSuccessfully() public {
         vm.startPrank(address(timeLock));
         vm.expectEmit(true, true, true, true);
@@ -58,5 +53,10 @@ contract VotingTokenUnitTests is Test {
         votingToken.mint(USER, TOKEN_AMOUNT_FIRST_MINT);
         vm.stopPrank();
         assertEq(votingToken.balanceOf(USER), TOKEN_AMOUNT_FIRST_MINT);
+    }
+
+    function test_nonces_ReturnsZeroIfUserDoNotHaveVotingPower() public view {
+        uint256 nonce = votingToken.nonces(USER);
+        assertEq(nonce, 0);
     }
 }
