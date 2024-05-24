@@ -196,7 +196,14 @@ contract FundingUnitTests is Test {
 
         vm.expectEmit(true, true, true, true);
         emit RandomWordsRequested(
-            0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c, 1, 100, 1, 3, 5000, 1, address(funding)
+            0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
+            1,
+            100,
+            1,
+            3,
+            500000,
+            1,
+            address(funding)
         );
         funding.performUpkeep("");
         assert(funding.getContractState() == Funding.ContractState.CLOSED);
