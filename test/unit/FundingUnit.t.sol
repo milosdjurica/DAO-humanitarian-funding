@@ -202,9 +202,69 @@ contract FundingUnitTests is Test {
         assert(funding.getContractState() == Funding.ContractState.CLOSED);
     }
 
-    function test_fulfillRandomWords_FundsAccountThatNeedsMore() public {}
-    function test_fulfillRandomWords_FundsAccountCompletely() public {}
+    function test_fulfillRandomWords_RevertIf_TransferFailed() public {
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(address(revertTransferContract), AMOUNT_TO_FUND * 2);
+        vm.stopPrank();
 
+        vm.startPrank(vrfCoordinator);
+        uint256[] memory randomWords = new uint256[](1);
+        randomWords[0] = 1;
+
+        vm.expectRevert(abi.encodeWithSelector(Funding.Funding__TransferFailed.selector));
+        funding.rawFulfillRandomWords(1, randomWords);
+        vm.stopPrank();
+    }
+
+    function test_fulfillRandomWords_FundsAccountThatNeedsMore() public {
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND * 2);
+        vm.stopPrank();
+
+        vm.startPrank(vrfCoordinator);
+        uint256[] memory randomWords = new uint256[](1);
+        randomWords[0] = 1;
+
+        vm.expectEmit(true, true, true, true);
+        emit MoneyIsSentToUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        funding.rawFulfillRandomWords(1, randomWords);
+        vm.stopPrank();
+
+        assertEq(funding.getLatestTimestamp(), block.timestamp);
+        assertEq(funding.getRecentWinner(), USER_TO_ADD);
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
+        assertEq(USER_TO_ADD.balance, AMOUNT_TO_FUND);
+        assertEq(address(funding).balance, 0);
+    }
+
+    function test_fulfillRandomWords_FundsAccountCompletely() public {
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND * 2);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        vm.stopPrank();
+
+        vm.startPrank(vrfCoordinator);
+        uint256[] memory randomWords = new uint256[](1);
+        randomWords[0] = 1;
+
+        vm.expectEmit(true, true, true, true);
+        emit MoneyIsSentToUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        funding.rawFulfillRandomWords(1, randomWords);
+        vm.stopPrank();
+
+        assertEq(funding.getLatestTimestamp(), block.timestamp);
+        assertEq(funding.getRecentWinner(), USER_TO_ADD);
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
+        assertEq(USER_TO_ADD.balance, AMOUNT_TO_FUND);
+        assertEq(address(funding).balance, AMOUNT_TO_FUND);
+    }
+
+    // TODO -> TEST VIEW AND PURE FUNCTIONS
     // function test_fund_RevertIf_NotEnoughBalance() public {
     //     vm.startPrank(address(timeLock));
     //     vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NotEnoughBalance.selector, 0));

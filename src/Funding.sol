@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 // ! Uncomment this line to use console.log
-// import "hardhat/console.sol";
+import "forge-std/console2.sol";
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -140,7 +140,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         } else {
             s_toBeFunded[winner] = 0;
             // ! Remove winner -> put last one on his place and pop last one because now there are 2
-            s_users[indexOfWinner] = s_users[totalNumberOfUsers];
+            s_users[indexOfWinner] = s_users[totalNumberOfUsers - 1];
             s_users.pop();
             moneyToSend = moneyNeeded;
         }
@@ -169,5 +169,13 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
 
     function getSubId() external view returns (uint64) {
         return i_subscriptionId;
+    }
+
+    function getLatestTimestamp() external view returns (uint256) {
+        return s_lastTimestamp;
+    }
+
+    function getRecentWinner() external view returns (address) {
+        return s_recentlyChosenUser;
     }
 }
