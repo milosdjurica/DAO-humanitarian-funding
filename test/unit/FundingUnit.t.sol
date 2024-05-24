@@ -234,9 +234,10 @@ contract FundingUnitTests is Test {
         funding.rawFulfillRandomWords(1, randomWords);
         vm.stopPrank();
 
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
         assertEq(funding.getLatestTimestamp(), block.timestamp);
         assertEq(funding.getRecentWinner(), USER_TO_ADD);
-        assert(funding.getContractState() == Funding.ContractState.OPEN);
+        assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), AMOUNT_TO_FUND);
         assertEq(USER_TO_ADD.balance, AMOUNT_TO_FUND);
         assertEq(address(funding).balance, 0);
     }
@@ -257,9 +258,10 @@ contract FundingUnitTests is Test {
         funding.rawFulfillRandomWords(1, randomWords);
         vm.stopPrank();
 
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
         assertEq(funding.getLatestTimestamp(), block.timestamp);
         assertEq(funding.getRecentWinner(), USER_TO_ADD);
-        assert(funding.getContractState() == Funding.ContractState.OPEN);
+        assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), 0);
         assertEq(USER_TO_ADD.balance, AMOUNT_TO_FUND);
         assertEq(address(funding).balance, AMOUNT_TO_FUND);
     }

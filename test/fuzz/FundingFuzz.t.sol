@@ -8,22 +8,30 @@ import {TimeLock} from "../../src/TimeLock.sol";
 import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {RevertTransfer} from "../mocks/RevertTransfer.sol";
+import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
 
 // TODO -> Check how to use mockCall and mockCallRevert -> https://book.getfoundry.sh/cheatcodes/mock-call
 contract FundingFuzzTests is Test {
+    uint256 constant AMOUNT_TO_FUND = 1 ether;
+
+    address payable USER = payable(makeAddr("USER"));
+    address payable USER_TO_ADD = payable(makeAddr("USER_TO_ADD"));
+
     DeployAndSetUpContracts deployer;
     TimeLock timeLock;
     Funding funding;
     HelperConfig helperConfig;
     RevertTransfer revertTransferContract;
+    address vrfCoordinator;
 
-    event AmountFundedToContract(address indexed user, uint256 indexed amount);
+    event AmountFundedToContract(address indexed sender, uint256 indexed amount);
     event UserAddedToArray(address indexed user, uint256 indexed amount);
+    event MoneyIsSentToUser(address indexed user, uint256 indexed amount);
 
     function setUp() public {
         deployer = new DeployAndSetUpContracts();
         (, timeLock,, funding,, helperConfig) = deployer.run();
-        // (interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit) = helperConfig.activeNetworkConfig();
+        (, vrfCoordinator,,,) = helperConfig.activeNetworkConfig();
         revertTransferContract = new RevertTransfer();
     }
 
@@ -87,5 +95,32 @@ contract FundingFuzzTests is Test {
         emit UserAddedToArray(user_, amount_);
         funding.addNewUser(user_, amount_);
         vm.stopPrank();
+
+        assertEq(funding.getAmountThatUserNeeds(user_), amount_);
+        assertEq(funding.getUserByIndex(0), user_);
+    }
+
+    function testFuzz_fulfillRandomWords_FulfillsWithRandomNumber(uint256 randomNumber_) public {
+        hoax(USER);
+        payable(address(funding)).transfer(AMOUNT_TO_FUND);
+        vm.startPrank(address(timeLock));
+        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND * 2);
+        vm.stopPrank();
+
+        vm.startPrank(vrfCoordinator);
+        uint256[] memory randomWords = new uint256[](1);
+        randomWords[0] = randomNumber_;
+
+        vm.expectEmit(true, true, true, true);
+        emit MoneyIsSentToUser(USER_TO_ADD, AMOUNT_TO_FUND);
+        funding.rawFulfillRandomWords(1, randomWords);
+        vm.stopPrank();
+
+        assert(funding.getContractState() == Funding.ContractState.OPEN);
+        assertEq(funding.getLatestTimestamp(), block.timestamp);
+        assertEq(funding.getRecentWinner(), USER_TO_ADD);
+        assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), AMOUNT_TO_FUND);
+        assertEq(USER_TO_ADD.balance, AMOUNT_TO_FUND);
+        assertEq(address(funding).balance, 0);
     }
 }
