@@ -92,11 +92,11 @@
 
 ### Built With
 
-- [Solidity ^0.8.20][Solidity-url]
+- [Solidity v^0.8.20][Solidity-url]
 - [Foundry][Foundry-url]
 - [Chainlink Automation][Chainlink-automation-url]
-- [Chainlink Verified Random Number Generator][Chainlink-verified-random-number-generator-url]
-- [Openzeppelin Governance Docs][Openzeppelin-governance-docs]
+- [Chainlink Verified Random Number Generator v2.0][Chainlink-verified-random-number-generator-url]
+- [Openzeppelin Governance v5.x][Openzeppelin-governance-docs]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
