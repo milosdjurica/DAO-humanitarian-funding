@@ -51,15 +51,12 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+          <li><a href="#testing">Testing</a></li>
+          <li><a href="#deploying">Deploying</a></li>
       </ul>
     </li>
     <li>
       <a href="#usage">Usage</a>
-      <ul>
-          <li><a href="#examples">Examples</a></li>
-          <li><a href="#deploying">Deploying</a></li>
-          <li><a href="#testing">Testing</a></li>
-      </ul>
     </li>
      <li>
      <!-- TODO -> add those parts below -->
@@ -184,32 +181,70 @@ Although code coverage is very high, this code has not been audited by professio
 
 <!-- TODO -> Detailed instructions to clone, install foundry, install project dependencies, test, deploy, compile, etc... -->
 
-How to set up project locally.
-
 ### Prerequisites
 
 1. Git
 2. Foundry -> [Installation guide][Foundry-installation-guide-url]
-<!-- TODO -> add .env needed variables -->
+   <!-- TODO -> add .env needed variables -->
+   <!-- TODO -> Optional for fork testing -->
+   <!-- TODO -> Optional for deploying on specific chains -->
+   <!-- TODO -> Optional for verifying contracts ??? Not sure if need .env for this -->
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/milosdjurica/DAO-funding-foundry.git
-   ```
-3. Install dependencies
-   ```sh
-   forge compile
-   ```
-4. Fill out your `.env` variables
+1. Clone the repo
+
+```sh
+ git clone https://github.com/milosdjurica/DAO-funding-foundry.git
+```
+
+2. Install dependencies
+
+```sh
+forge build
+```
+
+### Testing
+
+1. Run tests
+
+```sh
+forge test
+```
+
+2. Run only Unit tests
+
+```sh
+forge test --mc Unit
+```
+
+3. Run only Fuzz tests
+
+```sh
+forge test --mc Fuzz
+```
+
+4. Run tests with more details (logs) -> [Foundry Docs][Foundry-logs-docs-url]
+
+```sh
+forge test -vvv
+```
+
+5. See coverage
+
+```sh
+forge coverage
+```
+
+### Deploying
+
+<!-- TODO -> FINISH DEPLOYING INSTRUCTIONS -->
+
+1. 1. Get a free API Key at [https://example.com](https://example.com)
+
+2. Fill out your `.env` variables
    ```js
    SEPOLIA_RPC_URL = "ENTER YOUR SEPOLIA API KEY";
-   ```
-5. Run tests and see coverage
-   ```sh
-   forge coverage
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -218,17 +253,11 @@ How to set up project locally.
 
 ## Usage
 
-<!-- TODO ->  Contract preview and naming conventions and tips, also tips how to run only some tests, gas usage, coverage, compile, deploy scripts -> Project architecture and structure in general... Supported networks... -->
+To interact with the governance system, users can:
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-### Examples
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-### Deploying
-
-### Testing
+- Vote on proposals using VotingToken.
+- Propose changes or actions through the MyGovernor contract.
+- Monitor the funding distribution process through the Funding contract.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -327,3 +356,4 @@ Project Link: [https://github.com/milosdjurica/DAO-funding-foundry](https://gith
 [Openzeppelin-governance-docs]: https://docs.openzeppelin.com/contracts/5.x/governance
 [Foundry-installation-guide-url]: https://book.getfoundry.sh/getting-started/installation
 [Coverage-image-url]: https://github.com/milosdjurica/DAO-funding-foundry/blob/main/public/coverage.png
+[Foundry-logs-docs-url]: https://book.getfoundry.sh/forge/tests?highlight=-vvv#logs-and-traces
