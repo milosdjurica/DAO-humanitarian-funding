@@ -59,7 +59,6 @@
       <a href="#usage">Usage</a>
     </li>
      <li>
-     <!-- TODO -> add those parts below -->
       <a href="#improvements">Improvements</a>
       <ul>
         <li><a href="#limitations">Limitations</a></li>
@@ -67,11 +66,10 @@
         <li><a href="#features">Features</a></li>
       </ul>
     </li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <!-- <li><a href="#acknowledgments">Acknowledgments</a></li> -->
   </ol>
 </details>
 
@@ -279,26 +277,20 @@ To interact with the governance system, users can:
 
 ## Improvements
 
-<!-- TODO -> Add improvements, Add known issues (bad voters, maybe too much voting power??? Check this!!!) and limitations(Automatization 2.0, limited to some chains, Doesn't allow other tokens, Add this in future plans). -->
-
 ### Limitations
+
+- Chain limitation - because of VRF and Automation
+- Works only with VRF subscription 2.0 version
 
 ### Known Issues
 
+- Malicious voters
+
 ### Features
 
- <li><a href="#limitations">Limitations</a></li>
+- Add support for ERC20 tokens, not just native ETH currency
 
-<!-- ROADMAP -->
-
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-  - [ ] Nested Feature
-
-See the [open issues](https://github.com/milosdjurica/DAO-funding-foundry/issues) for a full list of proposed features (and known issues).
+### See the [open issues](https://github.com/milosdjurica/DAO-funding-foundry/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -323,7 +315,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -339,13 +331,13 @@ Project Link: [https://github.com/milosdjurica/DAO-funding-foundry](https://gith
 
 <!-- ACKNOWLEDGMENTS -->
 
-## Acknowledgments
+<!-- ## Acknowledgments
 
 - []()
 - []()
 - []()
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p> -->
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
