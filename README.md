@@ -86,7 +86,7 @@
 
 [Deployed and verified contract on Sepolia testnet](https://example.com)
 
-<!-- TODO -> Wite real About The Project paragraph ???  -->
+This project implements a decentralized governance system on the Ethereum blockchain, facilitated by a suite of smart contracts. It empowers token holders to participate in decision-making processes and provides mechanisms for funding individuals in need of medical treatment.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -103,6 +103,70 @@
 ### Technical Overview
 
 <!-- TODO -> Add contracts overview and explain technically how it all works and connects together, who are owners what are privileges etc etc. Explain tests, deploy scripts. -->
+
+#### Contracts:
+
+<ol>
+  <li>
+    <strong>Funding Contract</strong>:
+    <ul>
+      <li>
+        This contract holds funds and list of users that needs funding.
+      </li>
+      <li>
+        DAO can add new users and update amount of funds that existing users need.
+      </li>
+      <li>
+        Winner is picked automatically with Chainlink Automation, using Chainlink VRF in order to pick random winner.
+      </li>
+    </ul>
+
+  </li>
+  <li>
+    <strong>VotingToken Contract</strong>:
+    <ul>
+      <li>This contract extends ERC20 functionality and integrates voting capabilities. Token holders use this token to vote on governance proposals.</li>
+      <li>Contract is owned by TimeLock. Only TimeLock contract can mint new tokens (add new voters to DAO).</li>
+    </ul>
+  </li>
+  <li>
+    <strong>MyGovernor Contract</strong>:
+    <ul>
+      <li>A governance contract from the OpenZeppelin Contracts library.</li>
+      <li>It enables token holders to vote on proposals, managing the governance process.</li>
+    </ul>
+  </li>
+  <li>
+    <strong>TimeLock Contract</strong>:
+    <ul>
+      <li>A time-lock mechanism built using OpenZeppelin's TimelockController.</li>
+      <li>It acts as the owner of the Funding and VotingToken contracts and executes proposals passed by the MyGovernor contract.</li>
+    </ul>
+  </li>
+</ol>
+
+#### Dependencies
+
+<ol>
+  <li>
+    <strong>OpenZeppelin Contracts</strong>:
+    <ul>
+      <li>Integrated for secure and audited smart contracts for DAO management.</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Chainlink VRF</strong>:
+    <ul>
+      <li>Integrated for randomness generation for picking the winner.</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Chainlink Automation</strong>:
+    <ul>
+      <li>Integrated for automatically picking the winner and funding them.</li>
+    </ul>
+  </li>
+</ol>
 
 ### Coverage
 
