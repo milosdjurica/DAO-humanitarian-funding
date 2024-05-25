@@ -1,5 +1,7 @@
 <a name="readme-top"></a>
 
+<!-- TODO -> Fix those links -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
