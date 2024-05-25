@@ -142,6 +142,8 @@ This project implements a decentralized governance system on the Ethereum blockc
   </li>
 </ol>
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 #### Dependencies
 
 <ol>
@@ -165,15 +167,21 @@ This project implements a decentralized governance system on the Ethereum blockc
   </li>
 </ol>
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Coverage
 
 ![Coverage image][Coverage-image-url]
 
 <!-- TODO -> provide image of coverage and explain what was tested and how -->
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Disclaimer
 
 Although code coverage is very high, this code has not been audited by professionals, so it is NOT SAFE FOR PRODUCTION. Milos Djurica holds NO responsibility for the provided code. This is just a personal project created for learning purposes only. It aims to one day provide a solution to the world's existing problem, but it should be audited by professionals first.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 
@@ -190,6 +198,8 @@ Although code coverage is very high, this code has not been audited by professio
    <!-- TODO -> Optional for deploying on specific chains -->
    <!-- TODO -> Optional for verifying contracts ??? Not sure if need .env for this -->
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Installation
 
 1. Clone the repo
@@ -203,6 +213,8 @@ Although code coverage is very high, this code has not been audited by professio
 ```sh
 forge build
 ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Testing
 
@@ -235,6 +247,8 @@ forge test -vvv
 ```sh
 forge coverage
 ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Deploying
 
