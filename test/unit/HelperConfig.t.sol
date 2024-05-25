@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 
-contract HelperConfigTest is Test {
+contract HelperConfigUnitTests is Test {
     HelperConfig helperConfig;
 
     function setUp() public {
