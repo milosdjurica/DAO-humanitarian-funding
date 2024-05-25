@@ -106,6 +106,8 @@
 
 ### Coverage
 
+![Coverage image][Coverage-image-url]
+
 <!-- TODO -> provide image of coverage and explain what was tested and how -->
 
 ### Disclaimer
@@ -260,3 +262,4 @@ Project Link: [https://github.com/milosdjurica/DAO-funding-foundry](https://gith
 [Chainlink-verified-random-number-generator-url]: https://dev.chain.link/products/vrf
 [Openzeppelin-governance-docs]: https://docs.openzeppelin.com/contracts/5.x/governance
 [Foundry-installation-guide-url]: https://book.getfoundry.sh/getting-started/installation
+[Coverage-image-url]: https://github.com/milosdjurica/DAO-funding-foundry/blob/main/public/coverage.png
