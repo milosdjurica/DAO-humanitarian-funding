@@ -30,7 +30,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     ////////////////////
     // * Variables	  //
     ////////////////////
-    uint16 private constant REQUEST_CONFIRMATIONS = 3;
+    uint16 private constant REQUEST_BLOCK_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
 
     uint256 private immutable i_interval;
@@ -89,9 +89,9 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     function addNewUser(address newUser_, uint256 amount_) external onlyOwner {
         if (newUser_ == address(0)) revert Funding__ZeroAddress();
         if (amount_ <= 0) revert Funding__AmountIsZero();
-        // ! TODO -> Check in REMIX if it is more gas efficient to ->
-        // ! store contractState in local variable and then use it in next line
-        // TODO -> Also check in REMIX what costs more gas, getting public variable or private variable with getter
+        // ! Commented lines should be more gas efficient
+        // ContractState localState = s_contractState;
+        // if (localState != ContractState.OPEN) revert Funding__ContractStateNotOpen(localState);
         if (s_contractState != ContractState.OPEN) revert Funding__ContractStateNotOpen(s_contractState);
 
         if (s_toBeFunded[newUser_] == 0) s_users.push(payable(newUser_));
@@ -118,11 +118,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         // ! TODO -> check if this should be above checkUpkeep ?
         s_contractState = ContractState.CLOSED;
         i_vrfCoordinator.requestRandomWords(
-            i_gasLane, // gas lane
-            i_subscriptionId, // id
-            REQUEST_CONFIRMATIONS, // how many blocks should pass
-            i_callbackGasLimit, // gas limit
-            NUM_WORDS // number of random numbers we get back
+            i_gasLane, i_subscriptionId, REQUEST_BLOCK_CONFIRMATIONS, i_callbackGasLimit, NUM_WORDS
         );
     }
 

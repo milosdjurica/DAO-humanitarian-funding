@@ -34,8 +34,8 @@ contract HelperConfig is Script {
             interval: 30, // 30 secs
             vrfCoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
             gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-            subscriptionId: 7694, // TODO -> change this to your subscription !!! Maybe load from .env???
-            callbackGasLimit: 500000 // 500,000 gas !
+            subscriptionId: 7694,
+            callbackGasLimit: 500000
         });
     }
 
@@ -49,7 +49,7 @@ contract HelperConfig is Script {
         return NetworkConfig({
             interval: 30,
             vrfCoordinator: address(vrfCoordinatorMock),
-            gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c, // does not matter
+            gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
             subscriptionId: 1,
             callbackGasLimit: 500000
         });
