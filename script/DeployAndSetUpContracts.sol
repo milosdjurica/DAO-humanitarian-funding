@@ -8,6 +8,7 @@ import {MyGovernor} from "../src/MyGovernor.sol";
 import {Funding} from "../src/Funding.sol";
 import {Constants} from "./Constants.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
+import {DeployVotingTokenScript} from "./01-deployVotingToken.s.sol";
 
 contract DeployAndSetUpContracts is Script, Constants {
     Funding funding;
@@ -25,10 +26,11 @@ contract DeployAndSetUpContracts is Script, Constants {
         (uint256 interval, address vrfCoordinator, bytes32 gasLane, uint64 subscriptionId, uint32 callbackGasLimit) =
             helperConfig.activeNetworkConfig();
 
-        vm.startBroadcast();
-        votingToken = new VotingToken();
+        DeployVotingTokenScript deployVotingTokenContractScript = new DeployVotingTokenScript();
+        votingToken = deployVotingTokenContractScript.run();
         firstVoter = votingToken.owner();
 
+        vm.startBroadcast();
         timeLock = new TimeLock(MIN_DELAY, proposers, executors);
         myGovernor = new MyGovernor(
             GOVERNOR_NAME, VOTING_DELAY, VOTING_PERIOD, PROPOSAL_THRESHOLD, votingToken, QUORUM_PERCENTAGE, timeLock
