@@ -25,7 +25,7 @@ contract FundingFuzzTests is Test {
     address vrfCoordinator;
 
     event AmountFundedToContract(address indexed sender, uint256 indexed amount);
-    event UserAddedToArray(address indexed user, uint256 indexed amount);
+    event ArrayOfUsersUpdated(address indexed user, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed user, uint256 indexed amount);
 
     function setUp() public {
@@ -92,7 +92,7 @@ contract FundingFuzzTests is Test {
 
         vm.startPrank(address(timeLock));
         vm.expectEmit(true, true, true, true);
-        emit UserAddedToArray(user_, amount_);
+        emit ArrayOfUsersUpdated(user_, amount_);
         funding.addNewUser(user_, amount_);
         vm.stopPrank();
 

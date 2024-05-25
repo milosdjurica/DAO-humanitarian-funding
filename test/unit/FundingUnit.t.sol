@@ -29,7 +29,7 @@ contract FundingUnitTests is Test {
     address payable SENDER = payable(makeAddr("SENDER"));
     address USER_TO_ADD = makeAddr("USER_TO_ADD");
 
-    event UserAddedToArray(address indexed user, uint256 indexed amount);
+    event ArrayOfUsersUpdated(address indexed user, uint256 indexed amount);
     event AmountFundedToContract(address indexed sender, uint256 indexed amount);
     event MoneyIsSentToUser(address indexed user, uint256 indexed amount);
     event RandomWordsRequested(
@@ -124,7 +124,7 @@ contract FundingUnitTests is Test {
     function test_addNewUser_AddsUserSuccessfully() public {
         vm.startPrank(address(timeLock));
         vm.expectEmit(true, true, true, true);
-        emit UserAddedToArray(USER_TO_ADD, AMOUNT_TO_FUND);
+        emit ArrayOfUsersUpdated(USER_TO_ADD, AMOUNT_TO_FUND);
         funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
         vm.stopPrank();
         assertEq(funding.getAmountThatUserNeeds(USER_TO_ADD), AMOUNT_TO_FUND);
