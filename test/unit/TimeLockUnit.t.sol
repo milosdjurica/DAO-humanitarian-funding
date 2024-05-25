@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
+import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.s.sol";
 import {Constants} from "../../script/Constants.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
 import {MyGovernor} from "../../src/MyGovernor.sol";

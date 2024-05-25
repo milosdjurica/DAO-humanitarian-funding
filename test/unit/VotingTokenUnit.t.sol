@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 
 import {VotingToken, Ownable} from "../../src/VotingToken.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
-import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
+import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.s.sol";
 
 contract VotingTokenUnitTests is Test {
     uint256 public constant TOKEN_AMOUNT_FIRST_MINT = 100 ether;

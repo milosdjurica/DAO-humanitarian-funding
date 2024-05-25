@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 
 import {Funding} from "../../src/Funding.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
-import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
+import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {RevertTransfer} from "../mocks/RevertTransfer.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";

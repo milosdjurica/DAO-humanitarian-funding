@@ -119,8 +119,7 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
      * @return performData Data to be used in performUpkeep function. Always returns "0x0", because this value is not needed in performUpkeep function
      */
     function checkUpkeep(bytes memory /* checkData */ )
-        // TODO -> function can be converted to internal, but then update tests
-        public
+        internal
         view
         returns (bool upkeepNeeded, bytes memory /* performData */ )
     {
@@ -184,7 +183,6 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
         s_contractState = ContractState.OPEN;
         emit MoneyIsSentToUser(winner, moneyToSend);
 
-        // ! TODO -> Check if moneyToSend logic is good!!!
         (bool success,) = winner.call{value: moneyToSend}("");
         if (!success) revert Funding__TransferFailed();
     }

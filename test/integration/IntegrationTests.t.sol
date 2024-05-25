@@ -6,7 +6,7 @@ import {VotingToken} from "../../src/VotingToken.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
 import {MyGovernor} from "../../src/MyGovernor.sol";
 import {Funding, Ownable} from "../../src/Funding.sol";
-import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
+import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.s.sol";
 import {Constants} from "../../script/Constants.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";

@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import {Test, console2} from "forge-std/Test.sol";
 import {Funding, Ownable} from "../../src/Funding.sol";
 import {TimeLock} from "../../src/TimeLock.sol";
-import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.sol";
+import {DeployAndSetUpContracts} from "../../script/DeployAndSetUpContracts.s.sol";
 import {RevertTransfer} from "../mocks/RevertTransfer.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
@@ -133,14 +133,14 @@ contract FundingUnitTests is Test {
 
     function test_checkUpkeep_RevertIf_NotEnoughTimePassed() public {
         vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NotEnoughTimePassed.selector));
-        funding.checkUpkeep("");
+        funding.performUpkeep("");
     }
 
     function test_checkUpkeep_RevertIf_ContractBalanceIsZero() public {
         vm.warp(block.timestamp + interval + 1);
         vm.roll(block.timestamp + interval + 1);
         vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ContractBalanceIsZero.selector));
-        funding.checkUpkeep("");
+        funding.performUpkeep("");
     }
 
     function test_checkUpkeep_RevertIf_UsersArrayIsEmpty() public {
@@ -149,7 +149,7 @@ contract FundingUnitTests is Test {
         hoax(USER);
         payable(address(funding)).transfer(AMOUNT_TO_FUND);
         vm.expectRevert(abi.encodeWithSelector(Funding.Funding__NoUsersToPick.selector));
-        funding.checkUpkeep("");
+        funding.performUpkeep("");
     }
 
     function test_checkUpkeep_RevertIf_StateIsNotOpen() public {
@@ -162,22 +162,22 @@ contract FundingUnitTests is Test {
         vm.stopPrank();
         vm.store(address(funding), bytes32(uint256(5)), bytes32(uint256(1)));
         vm.expectRevert(abi.encodeWithSelector(Funding.Funding__ContractStateNotOpen.selector, 1));
-        funding.checkUpkeep("");
+        funding.performUpkeep("");
     }
 
-    function test_checkUpkeep_PassesSuccessfully() public {
-        vm.warp(block.timestamp + interval + 1);
-        vm.roll(block.timestamp + interval + 1);
-        hoax(USER);
-        payable(address(funding)).transfer(AMOUNT_TO_FUND);
-        vm.startPrank(address(timeLock));
-        funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
-        vm.stopPrank();
+    // function test_checkUpkeep_PassesSuccessfully() public {
+    //     vm.warp(block.timestamp + interval + 1);
+    //     vm.roll(block.timestamp + interval + 1);
+    //     hoax(USER);
+    //     payable(address(funding)).transfer(AMOUNT_TO_FUND);
+    //     vm.startPrank(address(timeLock));
+    //     funding.addNewUser(USER_TO_ADD, AMOUNT_TO_FUND);
+    //     vm.stopPrank();
 
-        (bool success, bytes memory data) = funding.checkUpkeep("");
-        assertTrue(success);
-        assertEq(data, "0x0");
-    }
+    //     (bool success, bytes memory data) = funding.checkUpkeep("");
+    //     assertTrue(success);
+    //     assertEq(data, "0x0");
+    // }
 
     function test_performUpkeep_PassesSuccessfully() public {
         // vm.mockCall(address(funding), abi.encodeWithSelector(funding.checkUpkeep.selector, ""), abi.encode(true, "0x0"));
