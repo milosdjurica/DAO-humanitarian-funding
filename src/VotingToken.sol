@@ -10,6 +10,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 /**
  * @title VotingToken
  * @dev A contract for a voting token that extends ERC20 functionality and includes voting capabilities
+ * @dev Read more on -> https://docs.openzeppelin.com/contracts/5.x/governance
  */
 contract VotingToken is ERC20, ERC20Permit, ERC20Votes, Ownable {
     /**

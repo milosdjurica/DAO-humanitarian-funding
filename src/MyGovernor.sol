@@ -13,6 +13,12 @@ import {
     TimelockController
 } from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
+/**
+ * @title MyGovernor
+ * @notice From the OpenZeppelin Contracts library (https://www.openzeppelin.com/contracts).
+ * @dev It implements a governance contract combining various extensions from the OpenZeppelin Contracts library, including Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, and GovernorTimelockControl.
+ * @dev Read more on -> https://docs.openzeppelin.com/contracts/5.x/governance
+ */
 contract MyGovernor is
     Governor,
     GovernorSettings,
