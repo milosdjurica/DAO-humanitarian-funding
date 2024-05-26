@@ -24,8 +24,7 @@
     <a href="https://github.com/milosdjurica/DAO-funding-foundry"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <!-- TODO -> put a sepolia network contract link in here, or Frontend -->
-    <a href="https://github.com/milosdjurica/DAO-funding-foundry">View Demo</a>
+    <a href="https://sepolia.etherscan.io/address/0x939b6eab56e536a3cc991ade5ae22888e68417c2">View Funding Contract</a>
     ·
     <a href="https://github.com/milosdjurica/DAO-funding-foundry/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
@@ -34,8 +33,9 @@
 </div>
 
 <!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
+
+## Table of Contents
+
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -57,6 +57,9 @@
     </li>
     <li>
       <a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#example">Example</a></li>
+      </ul>
     </li>
      <li>
       <a href="#improvements">Improvements</a>
@@ -71,17 +74,19 @@
     <li><a href="#contact">Contact</a></li>
     <!-- <li><a href="#acknowledgments">Acknowledgments</a></li> -->
   </ol>
-</details>
 
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
-<!-- TODO -> Link to sepolia contract -->
-
-[Deployed and verified contract on Sepolia testnet](https://example.com)
-
 This project implements a decentralized governance system on the Ethereum blockchain, facilitated by a suite of smart contracts. It empowers token holders to participate in decision-making processes and provides mechanisms for funding individuals in need of medical treatment.
+
+### Contracts are deployed and verified on Sepolia Testnet:
+
+- [VotingToken][VotingToken-sepolia-url]
+- [TimeLock][TimeLock-sepolia-url]
+- [MyGovernor][MyGovernor-sepolia-url]
+- [Funding][Funding-sepolia-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -169,9 +174,21 @@ This project implements a decentralized governance system on the Ethereum blockc
 
 ### Coverage
 
-![Coverage image][Coverage-image-url]
+#### Tests ->
 
-<!-- TODO -> provide image of coverage and explain what was tested and how -->
+- Total number of 54 tests
+- Unit tests
+- Integration tests
+- Fuzz tests
+
+#### Coverage % ->
+
+- Lines -> 97.83% (90/92)
+- Statements -> 95.16% (118/124)
+- Branches -> 92.86% (26/28)
+- Functions -> 84.85% (28/33)
+
+![Coverage image][Coverage-image-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -184,8 +201,6 @@ Although code coverage is very high, this code has not been audited by professio
 <!-- GETTING STARTED -->
 
 ## Getting Started
-
-<!-- TODO -> Detailed instructions to clone, install foundry, install project dependencies, test, deploy, compile, etc... -->
 
 ### Prerequisites
 
@@ -252,11 +267,25 @@ forge coverage
 
 <!-- TODO -> FINISH DEPLOYING INSTRUCTIONS -->
 
-1. 1. Get a free API Key at [https://example.com](https://example.com)
+1. Get a free API Key for RPC at [Alchemy][Alchemy-url]
+2. Get a free API Key for verifying contracts at [Etherscan][Etherscan-url]
 
-2. Fill out your `.env` variables
+3. Fill out your `.env` variables
    ```js
    SEPOLIA_RPC_URL = "ENTER YOUR SEPOLIA API KEY";
+   PRIVATE_KEY = "YOUR PRIVATE KEY";
+   ETHERSCAN_API_KEY = "ENTER YOUR ETHERSCAN API KEY TO VERIFY CONTRACTS";
+   ```
+4. Load your .env variables in terminal
+
+   ```
+   source .env
+   ```
+
+5. Deploy and verify contracts
+
+   ```
+   forge script script/DeployAndSetUpContracts.s.sol:DeployAndSetUpContracts --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $ETHERSCAN_API_KEY --verify
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -270,6 +299,14 @@ To interact with the governance system, users can:
 - Vote on proposals using VotingToken.
 - Propose changes or actions through the MyGovernor contract.
 - Monitor the funding distribution process through the Funding contract.
+
+### Example
+
+Write an example here:
+
+1.
+2.
+3.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -363,3 +400,9 @@ Project Link: [https://github.com/milosdjurica/DAO-funding-foundry](https://gith
 [Foundry-installation-guide-url]: https://book.getfoundry.sh/getting-started/installation
 [Coverage-image-url]: https://github.com/milosdjurica/DAO-funding-foundry/blob/main/public/coverage.png
 [Foundry-logs-docs-url]: https://book.getfoundry.sh/forge/tests?highlight=-vvv#logs-and-traces
+[VotingToken-sepolia-url]: https://sepolia.etherscan.io/address/0xc0ba5577609989f2cbb0efdf256a88be07d54455
+[TimeLock-sepolia-url]: https://sepolia.etherscan.io/address/0x09f8642c3fd71d3a46d620861104ceba180e9f71
+[MyGovernor-sepolia-url]: https://sepolia.etherscan.io/address/0xa40ee7dd9a992f1a246a42296c8862172b549885
+[Funding-sepolia-url]: https://sepolia.etherscan.io/address/0x939b6eab56e536a3cc991ade5ae22888e68417c2
+[Alchemy-url]: https://www.alchemy.com/
+[Etherscan-url]: https://docs.etherscan.io/getting-started/viewing-api-usage-statistics
