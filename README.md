@@ -104,44 +104,26 @@ Project implements a decentralized governance system with smart contracts on Sep
 
 #### Contracts:
 
-<ol>
-  <li>
-    <strong>Funding Contract</strong>:
-    <ul>
-      <li>
-        This contract holds funds and list of users that needs funding.
-      </li>
-      <li>
-        DAO can add new users and update amount of funds that existing users need.
-      </li>
-      <li>
-        Winner is picked automatically with Chainlink Automation, using Chainlink VRF in order to pick random winner.
-      </li>
-    </ul>
+1.  `Funding` Contract:
 
-  </li>
-  <li>
-    <strong>VotingToken Contract</strong>:
-    <ul>
-      <li>This contract extends ERC20 functionality and integrates voting capabilities. Token holders use this token to vote on governance proposals.</li>
-      <li>Contract is owned by TimeLock. Only TimeLock contract can mint new tokens (add new voters to DAO).</li>
-    </ul>
-  </li>
-  <li>
-    <strong>MyGovernor Contract</strong>:
-    <ul>
-      <li>A governance contract from the OpenZeppelin Contracts library.</li>
-      <li>It enables token holders to vote on proposals, managing the governance process.</li>
-    </ul>
-  </li>
-  <li>
-    <strong>TimeLock Contract</strong>:
-    <ul>
-      <li>A time-lock mechanism built using OpenZeppelin's TimelockController.</li>
-      <li>It acts as the owner of the Funding and VotingToken contracts and executes proposals passed by the MyGovernor contract.</li>
-    </ul>
-  </li>
-</ol>
+    - This contract holds funds and list of users that needs funding.
+    - DAO can add new users and update amount of funds that existing users need.
+    - Winner is picked automatically with Chainlink Automation, using Chainlink VRF in order to pick random winner.
+
+2.  `VotingToken` Contract:
+
+    - This contract extends ERC20 functionality and integrates voting capabilities. Token holders use this token to vote on governance proposals.
+    - Contract is owned by `TimeLock`. Only `TimeLock` contract can mint new tokens (add new voters to DAO).
+
+3.  `MyGovernor` Contract:
+
+    - A governance contract from the OpenZeppelin Contracts library.
+    - It enables token holders to vote on proposals, managing the governance process.
+
+4.  `TimeLock` Contract:
+
+    - A time-lock mechanism built using OpenZeppelin's `TimelockController`.
+    - It acts as the OWNER of the `Funding` and `VotingToken` contracts and executes proposals passed by the `MyGovernor` contract.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
