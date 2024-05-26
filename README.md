@@ -58,7 +58,7 @@
     <li>
       <a href="#usage">Usage</a>
       <ul>
-        <li><a href="#example">Example</a></li>
+        <li><a href="#examples">Examples</a></li>
       </ul>
     </li>
      <li>
@@ -79,7 +79,7 @@
 
 ## About The Project
 
-Project implements a decentralized governance system with smart contracts on Sepolia Testnet. This DAO is created to provide financial help to individuals who lack resources for a medical treatment. Token holders (voters) can vote to add new voters, add new users that need help and adjust amount that those users need.
+Project implements a decentralized governance system with smart contracts deployed and verified on Sepolia Testnet. This DAO is created to provide financial help to individuals who lack resources for a medical treatment. Token holders (voters) can vote to add new voters, add new users that need help and adjust amount that those users need.
 
 ### Contracts are deployed and verified on Sepolia Testnet:
 
@@ -279,7 +279,7 @@ To interact with the governance system, users can:
 - Monitor the funding distribution process through the Funding contract.
 - `TimeLock` is owner of `VotingToken` and `Funding` contracts. After proposal has passed, `TimeLock` contract is the one that executes those proposals.
 
-### Example
+### Examples
 
 Write an example here:
 
@@ -287,7 +287,7 @@ Write an example here:
 
    1. Someone proposes new user to be added as a voter
    2. Voters vote on proposal on `MyGovernor` contract
-   3. If proposal has passed, `TimeLock` contracts executes it and mints new `VotingToken`s.
+   3. If proposal has passed, `TimeLock` contracts executes it and mints `VotingToken`s to the new user.
 
 2. **Adding new user to be funded**:
    1. Someone proposes new user to be funded
