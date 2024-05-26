@@ -19,7 +19,7 @@
 <h3 align="center">Humanitarian DAO</h3>
 
   <p align="center">
-    Decentralized Autonomous Organization (DAO) with a single goal: to donate to individuals who lack the financial resources for medical treatment. Everyone deserves an equal chance, but unfortunately, that is not always the case. This DAO aims to address this issue by providing help to those in need.
+    Decentralized Autonomous Organization (DAO) with a goal to donate to individuals who lack the financial resources for medical treatment. Everyone deserves an equal chance, but unfortunately, that is not always the case. This DAO aims to address this issue by providing help to those in need.
     <br />
     <a href="https://github.com/milosdjurica/DAO-funding-foundry"><strong>Explore the docs »</strong></a>
     <br />
@@ -79,14 +79,14 @@
 
 ## About The Project
 
-This project implements a decentralized governance system on the Ethereum blockchain, facilitated by a suite of smart contracts. It empowers token holders to participate in decision-making processes and provides mechanisms for funding individuals in need of medical treatment.
+Project implements a decentralized governance system with smart contracts on Sepolia Testnet. This DAO is created to provide financial help to individuals who lack resources for a medical treatment. Token holders (voters) can vote to add new voters, add new users that need help and adjust amount that those users need.
 
 ### Contracts are deployed and verified on Sepolia Testnet:
 
-- [VotingToken][VotingToken-sepolia-url]
-- [TimeLock][TimeLock-sepolia-url]
-- [MyGovernor][MyGovernor-sepolia-url]
-- [Funding][Funding-sepolia-url]
+- [`VotingToken`][VotingToken-sepolia-url]
+- [`TimeLock`][TimeLock-sepolia-url]
+- [`MyGovernor`][MyGovernor-sepolia-url]
+- [`Funding`][Funding-sepolia-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,8 +101,6 @@ This project implements a decentralized governance system on the Ethereum blockc
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Technical Overview
-
-<!-- TODO -> Add contracts overview and explain technically how it all works and connects together, who are owners what are privileges etc etc. Explain tests, deploy scripts. -->
 
 #### Contracts:
 
@@ -206,10 +204,8 @@ Although code coverage is very high, this code has not been audited by professio
 
 1. Git
 2. Foundry -> [Installation guide][Foundry-installation-guide-url]
-   <!-- TODO -> add .env needed variables -->
-   <!-- TODO -> Optional for fork testing -->
-   <!-- TODO -> Optional for deploying on specific chains -->
-   <!-- TODO -> Optional for verifying contracts ??? Not sure if need .env for this -->
+3. Get a free API Key for RPC requests at [Alchemy][Alchemy-url]. For fork testing and deploying
+4. Get a free API Key for verifying contracts at [Etherscan][Etherscan-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -267,7 +263,7 @@ forge coverage
 
 <!-- TODO -> FINISH DEPLOYING INSTRUCTIONS -->
 
-1. Get a free API Key for RPC at [Alchemy][Alchemy-url]
+1. Get a free API Key for RPC requests at [Alchemy][Alchemy-url]
 2. Get a free API Key for verifying contracts at [Etherscan][Etherscan-url]
 
 3. Fill out your `.env` variables
@@ -296,17 +292,26 @@ forge coverage
 
 To interact with the governance system, users can:
 
-- Vote on proposals using VotingToken.
-- Propose changes or actions through the MyGovernor contract.
+- Vote on proposals using `VotingToken`.
+- Propose changes or actions through the `MyGovernor` contract.
 - Monitor the funding distribution process through the Funding contract.
+- `TimeLock` is owner of `VotingToken` and `Funding` contracts. After proposal has passed, `TimeLock` contract is the one that executes those proposals.
 
 ### Example
 
 Write an example here:
 
-1.
-2.
-3.
+1. **Giving voting power to new user**:
+
+   1. Someone proposes new user to be added as a voter
+   2. Voters vote on proposal on `MyGovernor` contract
+   3. If proposal has passed, `TimeLock` contracts executes it and mints new `VotingToken`s.
+
+2. **Adding new user to be funded**:
+   1. Someone proposes new user to be funded
+   2. Voters vote on proposal on `MyGovernor` contract
+   3. If proposal has passed, `TimeLock` contracts executes it and adds new user to array of users that need help in `Funding` contract.
+   4. After required time has passed, `Chainlink Automation` and `Chainlink VRF` automatically and randomly pick a winner that gets the funds that are held by `Funding` smart contract
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
