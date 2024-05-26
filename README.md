@@ -266,6 +266,9 @@ forge coverage
    forge script script/DeployAndSetUpContracts.s.sol:DeployAndSetUpContracts --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $ETHERSCAN_API_KEY --verify
    ```
 
+6. Register Chainlink Automation at -> https://automation.chain.link/
+7. Register Chainlink at -> https://vrf.chain.link/
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
