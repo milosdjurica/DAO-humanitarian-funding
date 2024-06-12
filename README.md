@@ -40,7 +40,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#tools-used">Tools Used</a></li>
         <li><a href="#technical-overview">Technical overview</a></li>
         <li><a href="#coverage">Coverage</a></li>
         <li><a href="#disclaimer">Disclaimer</a></li>
@@ -90,13 +90,16 @@ Project implements a decentralized governance system with smart contracts deploy
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Built With
+### Tools Used
 
 - [Solidity v^0.8.20][Solidity-url]
 - [Foundry][Foundry-url]
 - [Chainlink Automation][Chainlink-automation-url]
 - [Chainlink Verified Random Number Generator v2.0][Chainlink-verified-random-number-generator-url]
 - [Openzeppelin Governance v5.x][Openzeppelin-governance-docs]
+- [Slither][Slither-url] - Static analyzer
+- [Aderyn][Aderyn-url] - Rust based static analyzer for Solidity
+- [Solidity-code-metrics][Solidity-code-metrics-url] - VSCode extension (incomplete because of windows issue. See this issue for more details) -> https://github.com/Consensys/vscode-solidity-metrics/issues/19
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -396,3 +399,6 @@ Project Link: [https://github.com/milosdjurica/DAO-funding-foundry](https://gith
 [Funding-sepolia-url]: https://sepolia.etherscan.io/address/0x939b6eab56e536a3cc991ade5ae22888e68417c2
 [Alchemy-url]: https://www.alchemy.com/
 [Etherscan-url]: https://docs.etherscan.io/getting-started/viewing-api-usage-statistics
+[Slither-url]: https://github.com/crytic/slither
+[Aderyn-url]: https://github.com/Cyfrin/aderyn
+[Solidity-code-metrics-url]: https://github.com/Consensys/solidity-metrics
