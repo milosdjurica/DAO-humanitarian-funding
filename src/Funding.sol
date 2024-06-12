@@ -17,7 +17,6 @@ contract Funding is Ownable, VRFConsumerBaseV2 {
     error Funding__ContractStateNotOpen(ContractState);
     error Funding__NoUsersToPick();
     error Funding__NotEnoughTimePassed();
-    error Funding__UpkeepNotNeeded(uint256 balance, uint256 usersLength, ContractState);
 
     ////////////////////
     // * Types 		  //
