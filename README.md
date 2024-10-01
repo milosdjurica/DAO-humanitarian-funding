@@ -99,7 +99,7 @@ Project implements a decentralized governance system with smart contracts deploy
 - [Openzeppelin Governance v5.x][Openzeppelin-governance-docs]
 - [Slither][Slither-url] - Static analyzer
 - [Aderyn][Aderyn-url] - Rust based static analyzer for Solidity
-- [Solidity-code-metrics][Solidity-code-metrics-url] - VSCode extension (incomplete because of windows issue. See this issue for more details) -> https://github.com/Consensys/vscode-solidity-metrics/issues/19
+- [Solidity-code-metrics][Solidity-code-metrics-url] - VSCode extension<!-- (incomplete because of windows issue. See this issue for more details) -> https://github.com/Consensys/vscode-solidity-metrics/issues/19 -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -286,8 +286,6 @@ To interact with the governance system, users can:
 - `TimeLock` is owner of `VotingToken` and `Funding` contracts. After proposal has passed, `TimeLock` contract is the one that executes those proposals.
 
 ### Examples
-
-Write an example here:
 
 1. **Giving voting power to new user**:
 
